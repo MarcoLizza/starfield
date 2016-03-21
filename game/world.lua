@@ -45,6 +45,10 @@ local TINTS = {
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
 function world:initialize()
+  self.width = constants.SCREEN_WIDTH
+  self.height = constants.SCREEN_HEIGHT
+  self.margin = contants.CELL_SIZE
+
   self.entities = Entities.new()
   self.entities:initialize(self)
 
@@ -53,18 +57,7 @@ function world:initialize()
 end
 
 function world:generate()
-  self.level = level -- FIXME: should use global environment or move HUD to the game instance.
-  
-  -- According to the current level, set a "dusk" period, that is the length
-  -- of a "see everything" dimming twilight. From some level onward the twilight
-  -- won't be present at all.
-  local dusk_period = math.max(0, 10 - level * 0.5)
-
-  self.maze:generate(dusk_period)
-  self.entities:generate(level)
-
-  local position = self.entities.avatar.position
-  self.maze:spawn_emitter('avatar', position.x, position.y, 5, 3)
+  self.entities:generate()
 end
 
 function world:input(keys)

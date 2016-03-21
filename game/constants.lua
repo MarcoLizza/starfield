@@ -40,6 +40,7 @@ constants.MAZE_HEIGHT = 42
 
 constants.CELL_WIDTH = 8
 constants.CELL_HEIGHT = 8
+constants.CELL_SIZE = 8
 
 constants.SCREEN_WIDTH = constants.MAZE_WIDTH * constants.CELL_WIDTH
 constants.SCREEN_HEIGHT = constants.MAZE_HEIGHT * constants.CELL_HEIGHT
