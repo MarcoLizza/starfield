@@ -55,12 +55,12 @@ function Entities:initialize(world)
 end
 
 function Entities:generate(level)
-  self.avatar = { position = { x = 10, y = 10 }, angle = 0, health = 10 }
+  self.avatar = { position = { 10, 10 }, angle = 0, health = 10 }
   self.projectiles = {}
 end
 
 function Entities:input(keys)
-  local da = 0, shoot = false
+  local da, shoot = 0, false
   if keys.pressed['up'] then
   end
   if keys.pressed['down'] then
