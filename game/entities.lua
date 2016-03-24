@@ -59,34 +59,20 @@ end
 
 function Entities:initialize(world)
   self.world = world
+  
+  self.player = Player.new()
+  self.player:initialize(world)
 end
 
 function Entities:generate(level)
-  self.avatar = { position = { 10, 10 }, angle = 0, health = 10 }
+  self.player:reset()
   self.projectiles = {}
 end
 
-function Entities:input(keys)
-  local da, shoot = 0, false
-  if keys.pressed['up'] then
+function Entities:input(keys, dt)
+  for _, entity in pairs(self.entities) do
+    entity.input(keys, dt)
   end
-  if keys.pressed['down'] then
-  end
-  if keys.pressed['left'] then
-    da = da - 5
-  end
-  if keys.pressed['right'] then
-    da = da + 5
-  end
-  if keys.pressed['x'] then
-    shoot = true
-  end
-
-  --
-  local avatar = self.avatar
-
-  --
-  avatar.angle = avatar.angle + da
 end
 
 function Entities:update(dt)
@@ -129,6 +115,13 @@ end
 
 function Entities:draw()
   local avatar = self.avatar
+end
+
+function Entities:create(type, parameters)
+  return nil
+end
+
+function Entities:push(entity)
 end
 
 -- END OF MODULE ---------------------------------------------------------------

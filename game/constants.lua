@@ -35,15 +35,15 @@ constants.VERSION = '0.1.0'
 
 constants.IDENTITY = 'Siege!'
 
-constants.MAZE_WIDTH = 42
-constants.MAZE_HEIGHT = 42
+constants.WORLD_WIDTH = 42
+constants.WORLD_HEIGHT = 42
 
 constants.CELL_WIDTH = 8
 constants.CELL_HEIGHT = 8
 constants.CELL_SIZE = 8
 
-constants.SCREEN_WIDTH = constants.MAZE_WIDTH * constants.CELL_WIDTH
-constants.SCREEN_HEIGHT = constants.MAZE_HEIGHT * constants.CELL_HEIGHT
+constants.SCREEN_WIDTH = constants.WORLD_WIDTH * constants.CELL_WIDTH
+constants.SCREEN_HEIGHT = constants.WORLD_HEIGHT * constants.CELL_HEIGHT
 constants.SCREEN_RECT = { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT }
 
 constants.WINDOW_WIDTH = constants.SCREEN_WIDTH * config.display.scale
