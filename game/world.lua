@@ -47,7 +47,7 @@ local TINTS = {
 function world:initialize()
   self.width = constants.SCREEN_WIDTH
   self.height = constants.SCREEN_HEIGHT
-  self.margin = contants.CELL_SIZE
+  self.margin = constants.CELL_SIZE
 
   self.entities = Entities.new()
   self.entities:initialize(self)

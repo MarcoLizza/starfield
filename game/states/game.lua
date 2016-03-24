@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 
 local constants = require('game.constants')
 local graphics = require('lib.graphics')
+local collections = require('lib.collections')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 
@@ -46,7 +47,7 @@ end
 
 function game:reset(params)
   -- Update the global variable to track game progress.
-  collections.merge(self.environment, params)
+  collections.merge(self.environment, params or {})
 end
 
 function game:leave()

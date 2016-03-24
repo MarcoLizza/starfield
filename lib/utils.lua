@@ -222,6 +222,10 @@ function utils.backward(index, table)
   return utils.forward(index + (#table - 2), table)
 end
 
+function utils.to_radians(angle)
+  return angle * 0.01745329251994329576923690768489
+end
+
 -- END OF MODULE ---------------------------------------------------------------
 
 return utils

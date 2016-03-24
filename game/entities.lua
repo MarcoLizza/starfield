@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 
 local config = require('game.config')
 local constants = require('game.constants')
-local Foe = require('game.foe')
+local Player = require('game.entities.player')
 local graphics = require('lib.graphics')
 local utils = require('lib.utils')
 
@@ -32,10 +32,7 @@ local utils = require('lib.utils')
 
 local Entities = {
   world = nil,
-  avatar = nil,
-  foes = {},
-  projectiles = {},
-  particles = {}
+  entities = {}
 }
 
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
@@ -60,68 +57,84 @@ end
 function Entities:initialize(world)
   self.world = world
   
-  self.player = Player.new()
-  self.player:initialize(world)
+  local player = Player.new()
+  player:initialize(world)
+  player:reset()
+  self:push(player)
 end
 
 function Entities:generate(level)
-  self.player:reset()
-  self.projectiles = {}
+  self.entities:reset()
+--  self.projectiles = {}
 end
 
 function Entities:input(keys, dt)
   for _, entity in pairs(self.entities) do
-    entity.input(keys, dt)
+    entity:input(keys, dt)
   end
 end
 
 function Entities:update(dt)
-  local zombies = {}
-  local exploded = {}
-  for id, projectile in pairs(self.projectiles) do
-    local is_dead = true
-    projectile.life = projectile.life - dt
-    if projectile.life > 0 then
-      local position = integrate(projectile.position, projectile.velocity, dt)
-      if not raycast(projectile.position, position,
-          function(position)
-            -- Check if the point at the current position is occupied by a foe.
-            for id, foe in pairs(foes) do
-              if not exploded[id] and utils.distance(position, foe.position) <= foe.radius then
-                exploded[#exploded + 1] = id
-                return true
-              end
-            end
-            return false
-          end) then
-        is_dead = false
-      end
-    end
-    if is_dead then
-      zombies[#zombies + 1] = id
-    end
-  end
-  
-  for _, id in ipairs(zombies) do
-    self.projectiles[id] = nil
+  for _, entity in pairs(self.entities) do
+    entity:update(dt)
   end
 
-  for _, id in ipairs(exploded) do
-    local foe = self.projectiles[id]
-    -- SPAWN AN EXPLOSION
-    self.projectiles[id] = nil
-  end
+--  local zombies = {}
+--  local exploded = {}
+--  for id, projectile in pairs(self.projectiles) do
+--    local is_dead = true
+--    projectile.life = projectile.life - dt
+--    if projectile.life > 0 then
+--      local position = integrate(projectile.position, projectile.velocity, dt)
+--      if not raycast(projectile.position, position,
+--          function(position)
+--            -- Check if the point at the current position is occupied by a foe.
+--            for id, foe in pairs(foes) do
+--              if not exploded[id] and utils.distance(position, foe.position) <= foe.radius then
+--                exploded[#exploded + 1] = id
+--                return true
+--              end
+--            end
+--            return false
+--          end) then
+--        is_dead = false
+--      end
+--    end
+--    if is_dead then
+--      zombies[#zombies + 1] = id
+--    end
+--  end
+  
+--  for _, id in ipairs(zombies) do
+--    self.projectiles[id] = nil
+--  end
+
+--  for _, id in ipairs(exploded) do
+--    local foe = self.projectiles[id]
+--    -- SPAWN AN EXPLOSION
+--    self.projectiles[id] = nil
+--  end
 end
 
 function Entities:draw()
-  local avatar = self.avatar
+  for _, entity in pairs(self.entities) do
+    entity:draw()
+  end
 end
 
 function Entities:create(type, parameters)
+  if type == 'player' then
+  elseif type == 'foe' then
+  elseif type == 'projectile' then
+  elseif type == 'sparkle' then
+  elseif type == 'debris' then
+  else
+  end
   return nil
 end
 
 function Entities:push(entity)
+  self.entities[#self.entities + 1] = entity
 end
 
 -- END OF MODULE ---------------------------------------------------------------

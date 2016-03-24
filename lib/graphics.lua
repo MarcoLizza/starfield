@@ -222,11 +222,24 @@ function graphics.square(x, y, color, alpha)
   end
 
   local r, g, b = unpack(color)
-  local sx, sy = to_screen(x, y)
   
   love.graphics.setColor({ r, g, b, alpha })
-  love.graphics.rectangle('fill', sx, sy,
+  love.graphics.rectangle('fill', x, y,
       constants.CELL_WIDTH, constants.CELL_HEIGHT)
+end
+
+function graphics.circle(x, y, radius, color, alpha)
+  color = type(color) == 'table' and color or COLORS[color]
+  alpha = alpha or 255
+
+  if alpha == 0 then
+    return
+  end
+
+  local r, g, b = unpack(color)
+
+  love.graphics.setColor({ r, g, b, alpha })
+  love.graphics.circle('fill', x, y, radius, 100)
 end
 
 function graphics.text(text, rectangle, face, color, halign, valign, scale)

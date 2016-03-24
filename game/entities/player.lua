@@ -22,7 +22,9 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
+local constants = require('game.constants')
 local graphics = require('lib.graphics')
+local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 
@@ -47,6 +49,10 @@ end
 function Player:initialize(world)
   self.world = world
   self.entities = world.entities
+  self.position = { 0, 0 }
+  self.angle = 0
+  self.radius = 0
+  self.health = 0
 end
 
 function Player:input(keys, dt)
@@ -78,21 +84,23 @@ end
 function Player:draw()
   -- Find the facing point on the circle by casting the current position
   -- according to the heading angle.
-  local x, y = unpack(self.position)
-  x = x + math.cos(self.angle) + self.radius
-  y = y + math.sin(self.angle) + self.radius
+  local angle = utils.to_radians(self.angle)
+  
+  local cx, cy = unpack(self.position)
+  local x = cx + math.cos(angle) * self.radius
+  local y = cy + math.sin(angle) * self.radius
 
-  graphics.circle(self.position, self.radius, 'white')
-  graphics.line(self.position, { x, y }, 'gray')
-  graphics.circle({ x, y }, 3, 'red')
+  graphics.circle(cx, cy, self.radius, 'white')
+--  graphics.line(cx, cy, x, y, 'blue')
+  graphics.circle(x, y , 2, 'gray')
 end
 
 function Player:reset()
   -- The player is initilized at the center of the screen, facing an arbitrary
   -- direction.
   self.position = {
-      math.floor(constants.WORLD_WIDTH / 2),
-      math.floor(constants.WORLD_HEIGHT / 2)
+      math.floor(constants.SCREEN_WIDTH / 2),
+      math.floor(constants.SCREEN_HEIGHT / 2)
     }
   self.angle = 0
   self.radius = 5
