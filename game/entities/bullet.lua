@@ -49,7 +49,7 @@ end
 function Bullet:initialize(entities, parameters)
   self.entities = entities
   self.type = 'bullet'
-  self.position = { unpack(parameters.position) } -- FIXME: we do copy or hold the reference?
+  self.position = parameters.position
   self.angle = parameters.angle
   self.radius = 3
   self.speed = 128

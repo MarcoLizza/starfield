@@ -58,15 +58,15 @@ end
 function Entities:initialize(world)
   self.world = world
   
-  local player = Player.new()
-  player:initialize(world)
-  player:reset()
+  local player = self:create('player', {
+      position = { math.floor(constants.SCREEN_WIDTH / 2), math.floor(constants.SCREEN_HEIGHT / 2) },
+      angle = 0
+    })
   self:push(player)
 end
 
 function Entities:generate(level)
   self.entities:reset()
---  self.projectiles = {}
 end
 
 function Entities:input(keys, dt)
@@ -125,6 +125,9 @@ end
 
 function Entities:create(type, parameters)
   if type == 'player' then
+    local player = Player.new()
+    player:initialize(self, parameters)
+    return player
   elseif type == 'foe' then
   elseif type == 'bullet' then
     local bullet = Bullet.new()

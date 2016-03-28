@@ -46,14 +46,13 @@ end
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-function Player:initialize(world)
-  self.world = world
-  self.entities = world.entities
+function Player:initialize(entities, parameters)
+  self.entities = entities
   self.type = 'player'
-  self.position = { 0, 0 }
-  self.angle = 0
-  self.radius = 0
-  self.health = 0
+  self.position = parameters.position
+  self.angle = parameters.angle
+  self.radius = 5
+  self.health = 10
 end
 
 function Player:input(keys, dt)
@@ -97,15 +96,6 @@ function Player:draw()
 end
 
 function Player:reset()
-  -- The player is initilized at the center of the screen, facing an arbitrary
-  -- direction.
-  self.position = {
-      math.floor(constants.SCREEN_WIDTH / 2),
-      math.floor(constants.SCREEN_HEIGHT / 2)
-    }
-  self.angle = 0
-  self.radius = 5
-  self.health = 10
 end
 
 -- END OF MODULE ---------------------------------------------------------------
