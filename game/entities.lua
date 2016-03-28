@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 local config = require('game.config')
 local constants = require('game.constants')
 local Player = require('game.entities.player')
+local Bullet = require('game.entities.bullet')
 local graphics = require('lib.graphics')
 local utils = require('lib.utils')
 
@@ -125,7 +126,10 @@ end
 function Entities:create(type, parameters)
   if type == 'player' then
   elseif type == 'foe' then
-  elseif type == 'projectile' then
+  elseif type == 'bullet' then
+    local bullet = Bullet.new()
+    bullet:initialize(self, parameters)
+    return bullet
   elseif type == 'sparkle' then
   elseif type == 'debris' then
   else

@@ -28,15 +28,15 @@ local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 
-local Player = {
+local Bullet = {
 }
 
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-Player.__index = Player
+Bullet.__index = Bullet
 
-function Player.new()
-  local self = setmetatable({}, Player)
+function Bullet.new()
+  local self = setmetatable({}, Bullet)
   return self
 end
 
@@ -46,70 +46,53 @@ end
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-function Player:initialize(world)
-  self.world = world
-  self.entities = world.entities
-  self.type = 'player'
-  self.position = { 0, 0 }
-  self.angle = 0
-  self.radius = 0
-  self.health = 0
+function Bullet:initialize(entities, parameters)
+  self.entities = entities
+  self.type = 'bullet'
+  self.position = { unpack(parameters.position) } -- FIXME: we do copy or hold the reference?
+  self.angle = parameters.angle
+  self.radius = 3
+  self.speed = 128
+  self.life = 5
 end
 
-function Player:input(keys, dt)
-  local da, shoot = 0, false
-  if keys.pressed['left'] then
-    da = da - 5
-  end
-  if keys.pressed['right'] then
-    da = da + 5
-  end
-  if keys.pressed['x'] then
-    shoot = true
-  end
+function Bullet:input(keys, dt)
+end
 
-  -- Update the player heading (angle)
-  self.angle = self.angle + da
+function Bullet:update(dt)
+  -- Decrease the current bullet life. If "dead" bail out.
+  if self.life > 0 then
+    self.life = self.life - dt
+  end
+  if self.life <= 0 then
+    return
+  end
   
-  -- If the player is shooting, spawn a new projectile at the
-  -- current player position and with the same angle of direction.
-  if shoot then
-    local bullet = self.entities:create('bullet', { position = { unpack(self.position) }, angle = self.angle })
-    self.entities:push(bullet)
-  end
-end
-
-function Player:update(dt)
-end
-
-function Player:draw()
-  -- Find the facing point on the circle by casting the current position
-  -- according to the heading angle.
+  -- Compute the current bullet velocity and update its position.
   local angle = utils.to_radians(self.angle)
+
+  local vx = math.cos(angle) * self.speed * dt
+  local vy = math.sin(angle) * self.speed * dt
   
   local cx, cy = unpack(self.position)
-  local x = cx + math.cos(angle) * self.radius
-  local y = cy + math.sin(angle) * self.radius
-
-  graphics.circle(cx, cy, self.radius, 'white')
---  graphics.line(cx, cy, x, y, 'blue')
-  graphics.circle(x, y , 2, 'gray')
+  self.position = { cx + vx, cy + vy }
 end
 
-function Player:reset()
-  -- The player is initilized at the center of the screen, facing an arbitrary
-  -- direction.
-  self.position = {
-      math.floor(constants.SCREEN_WIDTH / 2),
-      math.floor(constants.SCREEN_HEIGHT / 2)
-    }
-  self.angle = 0
-  self.radius = 5
-  self.health = 10
+function Bullet:draw()
+  if self.life <= 0 then
+    return
+  end
+  
+  local cx, cy = unpack(self.position)
+  graphics.circle(cx, cy, self.radius, 'red')
+end
+
+function Bullet:is_alive()
+  return self.life > 0
 end
 
 -- END OF MODULE ---------------------------------------------------------------
 
-return Player
+return Bullet
 
 -- END OF FILE -----------------------------------------------------------------
