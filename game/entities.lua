@@ -76,11 +76,21 @@ function Entities:input(keys, dt)
 end
 
 function Entities:update(dt)
-  for _, entity in pairs(self.entities) do
+  -- Update and keep track of the entities that supports life-querying
+  -- and need to be removed.
+  local zombies = {}
+  for id, entity in pairs(self.entities) do
     entity:update(dt)
+    if entity.is_alive and not entity:is_alive() then
+      zombies[#zombies + 1] = id
+    end
   end
 
---  local zombies = {}
+  for _, id in ipairs(zombies) do
+    self.entities[id] = nil
+  end
+
+--  for key, entity
 --  local exploded = {}
 --  for id, projectile in pairs(self.projectiles) do
 --    local is_dead = true
