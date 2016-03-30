@@ -28,15 +28,15 @@ local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 
-local Player = {
+local Foe = {
 }
 
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-Player.__index = Player
+Foe.__index = Foe
 
-function Player.new()
-  local self = setmetatable({}, Player)
+function Foe.new()
+  local self = setmetatable({}, Foe)
   return self
 end
 
@@ -46,75 +46,49 @@ end
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-function Player:initialize(entities, parameters)
+function Foe:initialize(entities, parameters)
   self.entities = entities
-  self.type = 'player'
+  self.type = 'foe'
   self.position = parameters.position
   self.angle = parameters.angle
-  self.radius = 5
-  self.health = 10
+  self.radius = 3
+  self.speed = parameters.speed
+  self.health = 20
 end
 
-function Player:input(keys, dt)
-  local da, shoot = 0, false
-  if keys.pressed['left'] then
-    da = da - 5
-  end
-  if keys.pressed['right'] then
-    da = da + 5
-  end
-  if keys.pressed['x'] then
-    shoot = true
-  end
-
-  -- Update the player heading (angle)
-  self.angle = self.angle + da
-  
-  -- If the player is shooting, spawn a new projectile at the
-  -- current player position and with the same angle of direction.
-  if shoot then
-    local bullet = self.entities:create('bullet', { position = { unpack(self.position) }, angle = self.angle })
-    self.entities:push(bullet)
-  end
+function Foe:input(keys, dt)
 end
 
-function Player:update(dt)
-end
-
-function Player:draw()
-  -- Find the facing point on the circle by casting the current position
-  -- according to the heading angle.
+function Foe:update(dt)
+  -- Compute the current bullet velocity and update its position.
   local angle = utils.to_radians(self.angle)
+
+  local vx = math.cos(angle) * self.speed * dt
+  local vy = math.sin(angle) * self.speed * dt
   
   local cx, cy = unpack(self.position)
-  local x = cx + math.cos(angle) * self.radius
-  local y = cy + math.sin(angle) * self.radius
-
-  graphics.circle(cx, cy, self.radius, 'white')
---  graphics.line(cx, cy, x, y, 'blue')
-  graphics.circle(x, y , 2, 'gray')
+  self.position = { cx + vx, cy + vy }
 end
 
-function Player:reset()
-end
-
-function Player:collide(entity)
-  -- FIXME: use "utils.distance"
-  local x0, y0 = unpack(self.position)
-  local x1, y1 = unpack(entity.position)
-  local dx, dy = x0 - x1, y0 - y1
-  local distance = math.sqrt(dx * dx + dy * dy)
-  return distance <= (self.radius + entity.radius)
-end
-
-function Player:hit()
-  if self.health > 0 then
-    self.health = math.max(0, self.health - 1)
+function Foe:draw()
+  if self.health <= 0 then
+    return
   end
+  
+  local cx, cy = unpack(self.position)
+  graphics.circle(cx, cy, self.radius, 'yellow')
+end
+
+function Foe:is_alive()
+  return self.health > 0
+end
+
+function Foe:kill()
+  self.health = 0
 end
 
 -- END OF MODULE ---------------------------------------------------------------
 
-return Player
+return Foe
 
 -- END OF FILE -----------------------------------------------------------------

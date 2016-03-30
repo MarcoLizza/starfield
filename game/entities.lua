@@ -26,6 +26,7 @@ local config = require('game.config')
 local constants = require('game.constants')
 local Player = require('game.entities.player')
 local Bullet = require('game.entities.bullet')
+local Foe = require('game.entities.foe')
 local graphics = require('lib.graphics')
 local utils = require('lib.utils')
 
@@ -139,6 +140,9 @@ function Entities:create(type, parameters)
     player:initialize(self, parameters)
     return player
   elseif type == 'foe' then
+    local foe = Foe.new()
+    foe:initialize(self, parameters)
+    return foe
   elseif type == 'bullet' then
     local bullet = Bullet.new()
     bullet:initialize(self, parameters)
@@ -152,6 +156,33 @@ end
 
 function Entities:push(entity)
   self.entities[#self.entities + 1] = entity
+end
+
+function Entities:iterate(callback)
+  for id, entity in pairs(self.entities) do
+    if not callback(entity) then
+      break
+    end
+  end
+end
+
+function Entities:select(filter)
+  local entities
+  for id, entity in pairs(self.entities) do
+    if filter(entity) then
+      entities[#entities + 1] = entity
+    end
+  end
+  return entities
+end
+
+function Entities:find(filter)
+  for id, entity in pairs(self.entities) do
+    if filter(entity) then
+      return entity
+    end
+  end
+  return nil
 end
 
 -- END OF MODULE ---------------------------------------------------------------

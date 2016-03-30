@@ -226,6 +226,10 @@ function utils.to_radians(angle)
   return angle * 0.01745329251994329576923690768489
 end
 
+function utils.to_degrees(angle)
+  return angle * 57.295779513082320876798154814105
+end
+
 -- END OF MODULE ---------------------------------------------------------------
 
 return utils

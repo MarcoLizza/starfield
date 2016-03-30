@@ -28,6 +28,7 @@ local Entities = require('game.entities')
 local Hud = require('game.hud')
 
 local graphics = require('lib.graphics')
+local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 
@@ -42,6 +43,34 @@ local TINTS = {
   undefined = 'purple'
 }
 
+-- LOCAL FUNCTIONS -------------------------------------------------------------
+
+function world:randomize_foe_parameters()
+  local border = love.math.random(4)
+  local x, y = 0, 0
+  if border == 1 then -- up
+    x = love.math.random(self.width) - 1
+    y = 0
+  elseif border == 2 then -- left
+    x = 0
+    y = love.math.random(self.height) - 1
+  elseif border == 3 then -- down
+    x = love.math.random(self.width) - 1
+    y = self.height - 1
+  elseif border == 4 then -- right
+    x = self.width - 1
+    y = love.math.random(self.height) - 1
+  end
+  -- TODO: pick a random pixel "around" the center of the screen
+  local dx, dy = math.floor(self.width / 2), math.floor(self.height / 2)
+  local atan2 = math.atan2(dy - y, dx - x)
+  return {
+      position = { x, y },
+      angle = utils.to_degrees(atan2),
+      speed = love.math.random(32) + 32
+    }
+end
+
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
 function world:initialize()
@@ -54,10 +83,13 @@ function world:initialize()
 
   self.hud = Hud.new()
   self.hud:initialize(self)
+  
+  self.ticker = 0
 end
 
 function world:generate()
   self.entities:generate()
+--  self.ticker = 0
 end
 
 function world:input(keys)
@@ -65,8 +97,34 @@ function world:input(keys)
 end
 
 function world:update(dt)
+  -- TODO: should resolve collisions HERE, by projecting movements.
+  
   self.entities:update(dt)
   self.hud:update(dt)
+
+  -- Find the player entity (we should cache it?)
+  local player = self.entities:find(function(entity)
+        return entity.type == 'player'
+      end)
+
+  -- Scan the entities, resolving collisions with the foes.
+  self.entities:iterate(function(entity)
+        if entity.type == 'foe' and player:collide(entity) then
+          player:hit()
+          entity:kill()
+          -- TODO: spawn explosion
+          return false
+        end
+        return true
+      end)
+
+  -- Spaw a new foe from time to time
+  self.ticker = self.ticker + dt
+  if self.ticker >= 5 then
+    local foe = self.entities:create('foe', self:randomize_foe_parameters())
+    self.entities:push(foe)
+    self.ticker = 0
+  end
 end
 
 function world:draw()
