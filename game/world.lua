@@ -46,6 +46,7 @@ local TINTS = {
 -- LOCAL FUNCTIONS -------------------------------------------------------------
 
 function world:randomize_foe_parameters()
+  -- Pick a border and position from which the foe will be spawned.
   local border = love.math.random(4)
   local x, y = 0, 0
   if border == 1 then -- up
@@ -61,9 +62,12 @@ function world:randomize_foe_parameters()
     x = self.width - 1
     y = love.math.random(self.height) - 1
   end
-  -- TODO: pick a random pixel "around" the center of the screen
-  local dx, dy = math.floor(self.width / 2), math.floor(self.height / 2)
+  -- Pick a random pixel "around" the center of the screen. Then convert the
+  -- target position to an angle.
+  local cx, cy = math.floor(self.width / 2), math.floor(self.height / 2)
+  local dx, dy = love.math.random(cx - 32, cx + 32) - 1, love.math.random(cy - 32, cy + 32) - 1
   local atan2 = math.atan2(dy - y, dx - x)
+  -- Return the resulting table.
   return {
       position = { x, y },
       angle = utils.to_degrees(atan2),
@@ -130,18 +134,6 @@ end
 function world:draw()
   self.entities:draw()
   self.hud:draw()
-end
-
-function world:collide(point, dx, dy) -- Maze:move_to()
-  local x, y = point.x, point.y
-  local nx, ny = x + dx, y + dy
-  -- We cannot move diagonally by design.
-  if dy ~= 0 and self.maze:is_walkable(x, ny) then
-    point.y = ny
-  elseif dx ~=  0 and self.maze:is_walkable(nx, y) then
-    point.x = nx
-  end
-  return point.x ~= x or point.y ~= y
 end
 
 -- END OF MODULE -------------------------------------------------------------
