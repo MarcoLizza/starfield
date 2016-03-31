@@ -26,7 +26,8 @@ local config = require('game.config')
 local constants = require('game.constants')
 local Player = require('game.entities.player')
 local Bullet = require('game.entities.bullet')
-local Foe = require('game.entities.foe')
+local Diver = require('game.entities.diver')
+local Spouter = require('game.entities.spouter')
 local graphics = require('lib.graphics')
 local utils = require('lib.utils')
 
@@ -139,8 +140,12 @@ function Entities:create(type, parameters)
     local player = Player.new()
     player:initialize(self, parameters)
     return player
-  elseif type == 'foe' then
-    local foe = Foe.new()
+  elseif type == 'spouter' then
+    local foe = Spouter.new()
+    foe:initialize(self, parameters)
+    return foe
+  elseif type == 'diver' then
+    local foe = Diver.new()
     foe:initialize(self, parameters)
     return foe
   elseif type == 'bullet' then

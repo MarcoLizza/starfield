@@ -71,7 +71,9 @@ function world:randomize_foe_parameters()
   return {
       position = { x, y },
       angle = utils.to_degrees(atan2),
-      speed = love.math.random(32) + 32
+      speed = love.math.random(32) + 32,
+      rate = 5,
+      wander = 2
     }
 end
 
@@ -125,7 +127,8 @@ function world:update(dt)
   -- Spaw a new foe from time to time
   self.ticker = self.ticker + dt
   if self.ticker >= 5 then
-    local foe = self.entities:create('foe', self:randomize_foe_parameters())
+--    local foe = self.entities:create('foe', self:randomize_foe_parameters())
+    local foe = self.entities:create('spouter', self:randomize_foe_parameters())
     self.entities:push(foe)
     self.ticker = 0
   end

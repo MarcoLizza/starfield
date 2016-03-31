@@ -28,15 +28,15 @@ local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 
-local Foe = {
+local Diver = {
 }
 
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-Foe.__index = Foe
+Diver.__index = Diver
 
-function Foe.new()
-  local self = setmetatable({}, Foe)
+function Diver.new()
+  local self = setmetatable({}, Diver)
   return self
 end
 
@@ -46,7 +46,7 @@ end
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-function Foe:initialize(entities, parameters)
+function Diver:initialize(entities, parameters)
   self.entities = entities
   self.type = 'foe'
   self.position = parameters.position
@@ -56,11 +56,11 @@ function Foe:initialize(entities, parameters)
   self.health = 20
 end
 
-function Foe:input(keys, dt)
+function Diver:input(keys, dt)
 end
 
-function Foe:update(dt)
-  -- Compute the current bullet velocity and update its position.
+function Diver:update(dt)
+  -- Compute the current velocity and update the position.
   local angle = utils.to_radians(self.angle)
 
   local vx = math.cos(angle) * self.speed * dt
@@ -70,7 +70,7 @@ function Foe:update(dt)
   self.position = { cx + vx, cy + vy }
 end
 
-function Foe:draw()
+function Diver:draw()
   if self.health <= 0 then
     return
   end
@@ -79,16 +79,16 @@ function Foe:draw()
   graphics.circle(cx, cy, self.radius, 'yellow')
 end
 
-function Foe:is_alive()
+function Diver:is_alive()
   return self.health > 0
 end
 
-function Foe:kill()
+function Diver:kill()
   self.health = 0
 end
 
 -- END OF MODULE ---------------------------------------------------------------
 
-return Foe
+return Diver
 
 -- END OF FILE -----------------------------------------------------------------
