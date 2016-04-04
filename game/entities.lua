@@ -172,7 +172,7 @@ function Entities:iterate(callback)
 end
 
 function Entities:select(filter)
-  local entities
+  local entities = {}
   for id, entity in pairs(self.entities) do
     if filter(entity) then
       entities[#entities + 1] = entity
