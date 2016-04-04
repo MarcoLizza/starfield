@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
 local constants = require('game.constants')
+local common = require('game.entities.common')
 local graphics = require('lib.graphics')
 local utils = require('lib.utils')
 
@@ -65,13 +66,15 @@ end
 
 function Spouter:update(dt)
   -- "WOBBLER": move toward the center of the screen. Once a predetermined distance
-  -- is reached, start moving left/right or up/down
+  -- is reached, start moving left/right or up/down.
+  -- "SPOUTER": move to a target position in the outermost area. Once reached, start
+  -- moving around.
   self.bullet_counter = self.bullet_counter + dt
   if self.bullet_counter >= self.bullet_rate then
     -- FIXME: Shoot!
     self.bullet_counter = 0
   end
-  
+
   -- From time to time, change the foe direction. 
   self.wander_counter = self.wander_counter + dt
   if self.wander_counter >= self.wander_rate then
@@ -80,15 +83,9 @@ function Spouter:update(dt)
 --    self.angle = self.angle + love.math.random(-15, 15)
     self.angle = ANGLES[love.math.random(8)]
   end
-  
-  -- Compute the current velocity and update the position.
-  local angle = utils.to_radians(self.angle)
 
-  local vx = math.cos(angle) * self.speed * dt
-  local vy = math.sin(angle) * self.speed * dt
-  
-  local cx, cy = unpack(self.position)
-  self.position = { cx + vx, cy + vy }
+  -- Compute the current velocity and update the position.
+  self.position = { common.cast(self, self.speed * dt) }
 end
 
 function Spouter:draw()
@@ -100,13 +97,23 @@ function Spouter:draw()
   graphics.circle(cx, cy, self.radius, 'yellow')
 end
 
-function Spouter:is_alive()
-  return self.health > 0
+function Spouter:hit()
+  if self.health > 0 then
+    self.health = math.max(0, self.health - 1)
+  end
 end
 
 function Spouter:kill()
   self.health = 0
 end
+
+function Spouter:is_alive()
+  return self.health > 0
+end
+
+-- COMMON FUNCTIONS ------------------------------------------------------------
+
+Spouter.collide = common.collide
 
 -- END OF MODULE ---------------------------------------------------------------
 

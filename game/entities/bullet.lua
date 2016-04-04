@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
 local constants = require('game.constants')
+local common = require('game.entities.common')
 local graphics = require('lib.graphics')
 local utils = require('lib.utils')
 
@@ -51,6 +52,7 @@ function Bullet:initialize(entities, parameters)
   self.type = 'bullet'
   self.position = parameters.position
   self.angle = parameters.angle
+  self.is_friendly = parameters.is_friendly
   self.radius = 3
   self.speed = 128
   self.life = 5
@@ -69,13 +71,7 @@ function Bullet:update(dt)
   end
   
   -- Compute the current bullet velocity and update its position.
-  local angle = utils.to_radians(self.angle)
-
-  local vx = math.cos(angle) * self.speed * dt
-  local vy = math.sin(angle) * self.speed * dt
-  
-  local cx, cy = unpack(self.position)
-  self.position = { cx + vx, cy + vy }
+  self.position = { common.cast(self, self.speed * dt) }
 end
 
 function Bullet:draw()
@@ -85,6 +81,13 @@ function Bullet:draw()
   
   local cx, cy = unpack(self.position)
   graphics.circle(cx, cy, self.radius, 'red')
+end
+
+function Bullet:hit()
+end
+
+function Bullet:kill()
+  self.life = 0
 end
 
 function Bullet:is_alive()

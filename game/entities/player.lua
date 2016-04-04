@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
 local constants = require('game.constants')
+local common = require('game.entities.common')
 local graphics = require('lib.graphics')
 local utils = require('lib.utils')
 
@@ -73,7 +74,11 @@ function Player:input(keys, dt)
   -- If the player is shooting, spawn a new projectile at the
   -- current player position and with the same angle of direction.
   if shoot then
-    local bullet = self.entities:create('bullet', { position = { unpack(self.position) }, angle = self.angle })
+    local bullet = self.entities:create('bullet', {
+        position = { unpack(self.position) },
+        angle = self.angle,
+        is_friendly = true
+      })
     self.entities:push(bullet)
   end
 end
@@ -84,11 +89,8 @@ end
 function Player:draw()
   -- Find the facing point on the circle by casting the current position
   -- according to the heading angle.
-  local angle = utils.to_radians(self.angle)
-  
   local cx, cy = unpack(self.position)
-  local x = cx + math.cos(angle) * self.radius
-  local y = cy + math.sin(angle) * self.radius
+  local x, y = common.cast(self, self.radius)
 
   graphics.circle(cx, cy, self.radius, 'white')
 --  graphics.line(cx, cy, x, y, 'blue')
@@ -98,20 +100,23 @@ end
 function Player:reset()
 end
 
-function Player:collide(entity)
-  -- FIXME: use "utils.distance"
-  local x0, y0 = unpack(self.position)
-  local x1, y1 = unpack(entity.position)
-  local dx, dy = x0 - x1, y0 - y1
-  local distance = math.sqrt(dx * dx + dy * dy)
-  return distance <= (self.radius + entity.radius)
-end
-
 function Player:hit()
   if self.health > 0 then
     self.health = math.max(0, self.health - 1)
   end
 end
+
+function Player:kill()
+  self.health = 0
+end
+
+function Player:is_alive()
+  return self.health > 0
+end
+
+-- COMMON FUNCTIONS ------------------------------------------------------------
+
+Player.collide = common.collide
 
 -- END OF MODULE ---------------------------------------------------------------
 

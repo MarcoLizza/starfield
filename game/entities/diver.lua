@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
 local constants = require('game.constants')
+local common = require('game.entities.common')
 local graphics = require('lib.graphics')
 local utils = require('lib.utils')
 
@@ -61,13 +62,7 @@ end
 
 function Diver:update(dt)
   -- Compute the current velocity and update the position.
-  local angle = utils.to_radians(self.angle)
-
-  local vx = math.cos(angle) * self.speed * dt
-  local vy = math.sin(angle) * self.speed * dt
-  
-  local cx, cy = unpack(self.position)
-  self.position = { cx + vx, cy + vy }
+  self.position = { common.cast(self, self.speed * dt) }
 end
 
 function Diver:draw()
@@ -79,13 +74,23 @@ function Diver:draw()
   graphics.circle(cx, cy, self.radius, 'yellow')
 end
 
-function Diver:is_alive()
-  return self.health > 0
+function Diver:hit()
+  if self.health > 0 then
+    self.health = math.max(0, self.health - 1)
+  end
 end
 
 function Diver:kill()
   self.health = 0
 end
+
+function Diver:is_alive()
+  return self.health > 0
+end
+
+-- COMMON FUNCTIONS ------------------------------------------------------------
+
+Diver.collide = common.collide
 
 -- END OF MODULE ---------------------------------------------------------------
 

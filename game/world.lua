@@ -37,12 +37,6 @@ local world = {
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
 
-local TINTS = {
-  ground = 'peru',
-  wall = 'saddlebrown',
-  undefined = 'purple'
-}
-
 -- LOCAL FUNCTIONS -------------------------------------------------------------
 
 function world:randomize_foe_parameters()
@@ -119,7 +113,30 @@ function world:update(dt)
           player:hit()
           entity:kill()
           -- TODO: spawn explosion
-          return false
+        end
+        if entity.type == 'bullet' and not entity.is_friendly and player:collide(entity) then
+          player:hit()
+          entity:kill()
+          -- TODO: spawn explosion
+        end
+        return true -- always continue, we need to consider all the collisions!
+      end)
+
+  -- Scan the enemies, and check if one of the player bullets hit
+  -- them.
+  local bullets = self.entities:select(function(entity)
+        return entity.type == 'bullet' and entity.is_friendly
+      end)
+  
+  self.entities:iterate(function(entity)
+        if entity.type == 'foe' then
+          for _, bullet in pairs(bullets) do
+            if entity:collide(bullet) then
+              entity:hit()
+              bullet:kill()
+            -- TODO: spawn explosion
+            end
+          end
         end
         return true
       end)
