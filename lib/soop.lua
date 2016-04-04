@@ -20,36 +20,40 @@ freely, subject to the following restrictions:
 
 ]]--
 
--- MODULE INCLUSIONS -----------------------------------------------------------
-
-local utils = require('lib.utils')
-
 -- MODULE DECLARATION ----------------------------------------------------------
 
-local common = {
+local soop = {
 }
 
 -- MODULE FUNCTION -------------------------------------------------------------
 
-function common.cast(self, modulo)
-  local angle = utils.to_radians(self.angle)
-
-  local vx = math.cos(angle) * modulo
-  local vy = math.sin(angle) * modulo
-  
-  local cx, cy = unpack(self.position)
-  return cx + vx, cy + vy
-end
-
-function common.collide(self, other)
-  local x0, y0 = unpack(self.position)
-  local x1, y1 = unpack(other.position)
-  local distance = utils.distance(x0, y0, x1, y1)
-  return distance <= (self.radius + other.radius)
+function soop.class(base)
+  local proto = {}
+  -- If a base class is defined, the copy all the fiels (mostly functions)
+  -- and store a reference to the base class. This is an instant snapshot,
+  -- any new field defined runtime in the base class won't be visible in the
+  -- derived class.
+  if base then
+    for key, value in pairs(base) do
+      proto[key] = value
+    end
+    proto.__base = base
+  end
+  -- This is the standard way in Lua to implement classes.
+  proto.__index = proto
+  proto.new = function()
+      local self = setmetatable({}, proto)
+      return self
+    end
+  -- Provide a help function to access the base reference.
+  proto.base = function(self)
+      return self.__base
+    end
+  return proto
 end
 
 -- END OF MODULE ---------------------------------------------------------------
 
-return common
+return soop
 
 -- END OF FILE -----------------------------------------------------------------

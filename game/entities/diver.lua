@@ -22,24 +22,14 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
-local constants = require('game.constants')
-local common = require('game.entities.common')
+local Entity = require('game.entities.entity')
 local graphics = require('lib.graphics')
-local utils = require('lib.utils')
+local soop = require('lib.soop')
 
 -- MODULE DECLARATION ----------------------------------------------------------
-
-local Diver = {
-}
-
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-Diver.__index = Diver
-
-function Diver.new()
-  local self = setmetatable({}, Diver)
-  return self
-end
+local Diver = soop.class(Entity)
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
 
@@ -48,13 +38,15 @@ end
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
 function Diver:initialize(entities, parameters)
+--  self.__base:initialize(parameters)
+  local base = self.__base
+  base.initialize(self, parameters)
+  
   self.entities = entities
   self.type = 'foe'
-  self.position = parameters.position
-  self.angle = parameters.angle
   self.radius = 3
   self.speed = parameters.speed
-  self.health = 20
+  self.life = 20
 end
 
 function Diver:input(keys, dt)
@@ -62,35 +54,17 @@ end
 
 function Diver:update(dt)
   -- Compute the current velocity and update the position.
-  self.position = { common.cast(self, self.speed * dt) }
+  self.position = { self:cast(self.speed * dt) }
 end
 
 function Diver:draw()
-  if self.health <= 0 then
+  if not self.is_alive() then
     return
   end
   
   local cx, cy = unpack(self.position)
   graphics.circle(cx, cy, self.radius, 'yellow')
 end
-
-function Diver:hit()
-  if self.health > 0 then
-    self.health = math.max(0, self.health - 1)
-  end
-end
-
-function Diver:kill()
-  self.health = 0
-end
-
-function Diver:is_alive()
-  return self.health > 0
-end
-
--- COMMON FUNCTIONS ------------------------------------------------------------
-
-Diver.collide = common.collide
 
 -- END OF MODULE ---------------------------------------------------------------
 

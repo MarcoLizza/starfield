@@ -22,24 +22,14 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
-local constants = require('game.constants')
-local common = require('game.entities.common')
+local Entity = require('game.entities.entity')
 local graphics = require('lib.graphics')
-local utils = require('lib.utils')
+local soop = require('lib.soop')
 
 -- MODULE DECLARATION ----------------------------------------------------------
-
-local Player = {
-}
-
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-Player.__index = Player
-
-function Player.new()
-  local self = setmetatable({}, Player)
-  return self
-end
+local Player = soop.class(Entity)
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
 
@@ -48,12 +38,14 @@ end
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
 function Player:initialize(entities, parameters)
+  -- self.__base:initialize(parameters)
+  local base = self.__base
+  base.initialize(self, parameters)
+  
   self.entities = entities
   self.type = 'player'
-  self.position = parameters.position
-  self.angle = parameters.angle
   self.radius = 5
-  self.health = 10
+  self.life = 10
 end
 
 function Player:input(keys, dt)
@@ -90,7 +82,7 @@ function Player:draw()
   -- Find the facing point on the circle by casting the current position
   -- according to the heading angle.
   local cx, cy = unpack(self.position)
-  local x, y = common.cast(self, self.radius)
+  local x, y = self:cast(self.radius)
 
   graphics.circle(cx, cy, self.radius, 'white')
 --  graphics.line(cx, cy, x, y, 'blue')
@@ -99,24 +91,6 @@ end
 
 function Player:reset()
 end
-
-function Player:hit()
-  if self.health > 0 then
-    self.health = math.max(0, self.health - 1)
-  end
-end
-
-function Player:kill()
-  self.health = 0
-end
-
-function Player:is_alive()
-  return self.health > 0
-end
-
--- COMMON FUNCTIONS ------------------------------------------------------------
-
-Player.collide = common.collide
 
 -- END OF MODULE ---------------------------------------------------------------
 

@@ -22,61 +22,55 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
-local Entity = require('game.entities.entity')
-local graphics = require('lib.graphics')
 local soop = require('lib.soop')
+local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
--- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-local Bullet = soop.class(Entity)
+local Entity = soop.class()
 
--- LOCAL CONSTANTS -------------------------------------------------------------
+-- MODULE FUNCTION -------------------------------------------------------------
 
--- LOCAL FUNCTIONS -------------------------------------------------------------
-
--- MODULE FUNCTIONS ------------------------------------------------------------
-
-function Bullet:initialize(entities, parameters)
---  self.__base:initialize(parameters)
-  local base = self.__base
-  base.initialize(self, parameters)
-  
-  self.entities = entities
-  self.type = 'bullet'
-  self.is_friendly = parameters.is_friendly
-  self.radius = 3
-  self.speed = 128
-  self.life = 5
+function Entity:initialize(parameters)
+  self.position = parameters.position
+  self.angle = parameters.angle
+  self.life = 0
 end
 
-function Bullet:input(keys, dt)
-end
-
-function Bullet:update(dt)
-  -- Decrease the current bullet life. If "dead" bail out.
+function Entity:hit(damage)
+  damage = damage or 1
   if self.life > 0 then
-    self.life = self.life - dt
+    self.life = math.max(0, self.life - damage)
   end
-  if self.life <= 0 then
-    return
-  end
-  
-  -- Compute the current bullet velocity and update its position.
-  self.position = { self:cast(self.speed * dt) }
 end
 
-function Bullet:draw()
-  if self.life <= 0 then
-    return
-  end
+function Entity:kill()
+  self.life = 0
+end
+
+function Entity:is_alive()
+  return self.life > 0
+end
+
+function Entity:collide(other)
+  local x0, y0 = unpack(self.position)
+  local x1, y1 = unpack(other.position)
+  local distance = utils.distance(x0, y0, x1, y1)
+  return distance <= (self.radius + other.radius)
+end
+
+function Entity:cast(modulo)
+  local angle = utils.to_radians(self.angle)
+
+  local vx = math.cos(angle) * modulo
+  local vy = math.sin(angle) * modulo
   
   local cx, cy = unpack(self.position)
-  graphics.circle(cx, cy, self.radius, 'red')
+  return cx + vx, cy + vy
 end
 
 -- END OF MODULE ---------------------------------------------------------------
 
-return Bullet
+return Entity
 
 -- END OF FILE -----------------------------------------------------------------

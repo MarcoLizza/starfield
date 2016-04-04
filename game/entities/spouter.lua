@@ -22,24 +22,14 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
-local constants = require('game.constants')
-local common = require('game.entities.common')
+local Entity = require('game.entities.entity')
 local graphics = require('lib.graphics')
-local utils = require('lib.utils')
+local soop = require('lib.soop')
 
 -- MODULE DECLARATION ----------------------------------------------------------
-
-local Spouter = {
-}
-
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-Spouter.__index = Spouter
-
-function Spouter.new()
-  local self = setmetatable({}, Spouter)
-  return self
-end
+local Spouter = soop.class(Entity)
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
 
@@ -48,13 +38,15 @@ end
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
 function Spouter:initialize(entities, parameters)
+--  self.__base:initialize(parameters)
+  local base = self.__base
+  base.initialize(self, parameters)
+  
   self.entities = entities
   self.type = 'foe'
-  self.position = parameters.position
-  self.angle = parameters.angle
   self.radius = 3
   self.speed = parameters.speed
-  self.health = 20
+  self.life = 20
   self.bullet_rate = parameters.rate
   self.bullet_counter = 0
   self.wander_rate = parameters.wander
@@ -85,35 +77,17 @@ function Spouter:update(dt)
   end
 
   -- Compute the current velocity and update the position.
-  self.position = { common.cast(self, self.speed * dt) }
+  self.position = { self:cast(self.speed * dt) }
 end
 
 function Spouter:draw()
-  if self.health <= 0 then
+  if not self:is_alive() then
     return
   end
   
   local cx, cy = unpack(self.position)
   graphics.circle(cx, cy, self.radius, 'yellow')
 end
-
-function Spouter:hit()
-  if self.health > 0 then
-    self.health = math.max(0, self.health - 1)
-  end
-end
-
-function Spouter:kill()
-  self.health = 0
-end
-
-function Spouter:is_alive()
-  return self.health > 0
-end
-
--- COMMON FUNCTIONS ------------------------------------------------------------
-
-Spouter.collide = common.collide
 
 -- END OF MODULE ---------------------------------------------------------------
 
