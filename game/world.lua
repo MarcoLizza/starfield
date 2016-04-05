@@ -22,12 +22,9 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
-local config = require('game.config')
 local constants = require('game.constants')
 local Entities = require('game.entities')
 local Hud = require('game.hud')
-
-local graphics = require('lib.graphics')
 local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
@@ -37,7 +34,43 @@ local world = {
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
 
+local TINTS = { 'yellow', 'red', 'orange' }
+
+local SMOKES = { 'white', 'lightgray', 'gray', 'darkgray' }
+
 -- LOCAL FUNCTIONS -------------------------------------------------------------
+
+function world:generate_sparkles(position)
+  local amount = love.math.random(4) + 3
+  for _ = 1, amount do
+    local parameters = {
+      position = { unpack(position) },
+      angle = love.math.random(360) - 1,
+      radius = 1,
+      speed = love.math.random(64) + 64,
+      life = (love.math.random(2) + 1) / 3,
+      color = TINTS[love.math.random(#TINTS)]
+    }
+    local sparkle = self.entities:create('sparkle', parameters)
+    self.entities:push(sparkle)
+  end
+end
+
+function world:generate_explosion(position)
+  local angle = love.math.random(360) - 1
+  for i = 0, 15 do -- two full rounds, to generate twin smokes
+    local parameters = {
+      position = { unpack(position) },
+      angle = angle + i  * 45,
+      radius = love.math.random(6) + 3,
+      speed = love.math.random(16) + 16,
+      life = (love.math.random(5) + 1) / 3,
+      color = SMOKES[love.math.random(#SMOKES)]
+    }
+    local debris = self.entities:create('sparkle', parameters) -- debris shrink with age
+    self.entities:push(debris)
+  end
+end
 
 function world:randomize_foe_parameters()
   -- Pick a border and position from which the foe will be spawned.
@@ -110,14 +143,20 @@ function world:update(dt)
   -- Scan the entities, resolving collisions with the foes.
   self.entities:iterate(function(entity)
         if entity.type == 'foe' and player:collide(entity) then
-          player:hit()
           entity:kill()
-          -- TODO: spawn explosion
+          player:hit()
+          self:generate_explosion(entity.position)
+          if not player:is_alive() then
+            self:generate_explosion(player.position)
+          end
         end
         if entity.type == 'bullet' and not entity.is_friendly and player:collide(entity) then
-          player:hit()
           entity:kill()
-          -- TODO: spawn explosion
+          player:hit()
+          self:generate_sparkles(entity.position)
+          if not player:is_alive() then
+            self:generate_explosion(player.position)
+          end
         end
         return true -- always continue, we need to consider all the collisions!
       end)
@@ -132,9 +171,12 @@ function world:update(dt)
         if entity.type == 'foe' then
           for _, bullet in pairs(bullets) do
             if entity:collide(bullet) then
-              entity:hit()
               bullet:kill()
-            -- TODO: spawn explosion
+              entity:hit()
+              self:generate_sparkles(bullet.position)
+              if not entity:is_alive() then
+                self:generate_explosion(entity.position)
+              end
             end
           end
         end

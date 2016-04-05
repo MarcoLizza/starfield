@@ -24,12 +24,13 @@ freely, subject to the following restrictions:
 
 local Entity = require('game.entities.entity')
 local graphics = require('lib.graphics')
+local easing = require('lib.easing')
 local soop = require('lib.soop')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-local Diver = soop.class(Entity)
+local Sparkle = soop.class(Entity)
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
 
@@ -37,37 +38,48 @@ local Diver = soop.class(Entity)
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-function Diver:initialize(entities, parameters)
+function Sparkle:initialize(entities, parameters)
 --  self.__base:initialize(parameters)
   local base = self.__base
   base.initialize(self, parameters)
   
   self.entities = entities
-  self.type = 'foe'
-  self.radius = 13
+  self.type = 'sparkle'
+  self.radius = parameters.radius
   self.speed = parameters.speed
-  self.life = 20
+  self.life = parameters.life
+  self.reference = parameters.life
+  self.color = parameters.color
 end
 
-function Diver:input(keys, dt)
+function Sparkle:input(keys, dt)
 end
 
-function Diver:update(dt)
-  -- Compute the current velocity and update the position.
+function Sparkle:update(dt)
+  -- Decrease the current bullet life. If "dead" bail out.
+  if self.life > 0 then
+    self.life = self.life - dt
+  end
+  if self.life <= 0 then
+    return
+  end
+  
+  -- Compute the current bullet velocity and update its position.
   self.position = { self:cast(self.speed * dt) }
 end
 
-function Diver:draw()
-  if not self.is_alive() then
+function Sparkle:draw()
+  if self.life <= 0 then
     return
   end
   
   local cx, cy = unpack(self.position)
-  graphics.circle(cx, cy, self.radius, 'yellow')
+  local alpha = self.life / self.reference
+  graphics.circle(cx, cy, self.radius, self.color, easing.hill(alpha) * 255)
 end
 
 -- END OF MODULE ---------------------------------------------------------------
 
-return Diver
+return Sparkle
 
 -- END OF FILE -----------------------------------------------------------------

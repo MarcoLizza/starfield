@@ -35,6 +35,18 @@ function easing.quadratic(value)
   return math.pow(value, 2.0)
 end
 
+function easing.cubic(value)
+  return math.pow(value, 3.0)
+end
+
+function easing.hill(value)
+  if value > 0.5 then
+    return 1.0
+  else
+    return value * 2
+  end
+end
+
 -- END OF MODULE ---------------------------------------------------------------
 
 return easing
