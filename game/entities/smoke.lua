@@ -24,12 +24,13 @@ freely, subject to the following restrictions:
 
 local Entity = require('game.entities.entity')
 local graphics = require('lib.graphics')
+local easing = require('lib.easing')
 local soop = require('lib.soop')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-local Spouter = soop.class(Entity)
+local Smoke = soop.class(Entity)
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
 
@@ -37,60 +38,48 @@ local Spouter = soop.class(Entity)
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-function Spouter:initialize(entities, parameters)
+function Smoke:initialize(entities, parameters)
 --  self.__base:initialize(parameters)
   local base = self.__base
   base.initialize(self, parameters)
   
   self.entities = entities
-  self.type = 'foe'
-  self.radius = 7
+  self.type = 'smoke'
+  self.radius = parameters.radius
   self.speed = parameters.speed
-  self.life = 5
-  self.bullet_rate = parameters.rate
-  self.bullet_counter = 0
-  self.wander_rate = parameters.wander
-  self.wander_counter = 0
+  self.life = parameters.life
+  self.reference = parameters.life
+  self.color = parameters.color
 end
 
-function Spouter:input(keys, dt)
+function Smoke:input(keys, dt)
 end
 
-function Spouter:update(dt)
-  -- "WOBBLER": move toward the center of the screen. Once a predetermined distance
-  -- is reached, start moving left/right or up/down.
-  -- "SPOUTER": move to a target position in the outermost area. Once reached, start
-  -- moving around.
-  self.bullet_counter = self.bullet_counter + dt
-  if self.bullet_counter >= self.bullet_rate then
-    -- FIXME: Shoot!
-    self.bullet_counter = 0
+function Smoke:update(dt)
+  -- Decrease the current bullet life. If "dead" bail out.
+  if self.life > 0 then
+    self.life = self.life - dt
   end
-
-  -- From time to time, change the foe direction. 
-  self.wander_counter = self.wander_counter + dt
-  if self.wander_counter >= self.wander_rate then
-    self.wander_counter = 0
-    local ANGLES = { 0, 45, 90, 135, 180, 225, 270, 315 }
---    self.angle = self.angle + love.math.random(-15, 15)
-    self.angle = ANGLES[love.math.random(8)]
+  if self.life <= 0 then
+    return
   end
-
-  -- Compute the current velocity and update the position.
+  
+  -- Compute the current bullet velocity and update its position.
   self.position = { self:cast(self.speed * dt) }
 end
 
-function Spouter:draw()
-  if not self:is_alive() then
+function Smoke:draw()
+  if self.life <= 0 then
     return
   end
   
   local cx, cy = unpack(self.position)
-  graphics.circle(cx, cy, self.radius, 'yellow')
+  local alpha = self.life / self.reference
+  graphics.circle(cx, cy, alpha * self.radius, self.color, easing.hill(alpha) * 255)
 end
 
 -- END OF MODULE ---------------------------------------------------------------
 
-return Spouter
+return Smoke
 
 -- END OF FILE -----------------------------------------------------------------

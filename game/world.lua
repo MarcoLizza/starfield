@@ -41,7 +41,7 @@ local SMOKES = { 'white', 'lightgray', 'gray', 'darkgray' }
 -- LOCAL FUNCTIONS -------------------------------------------------------------
 
 function world:generate_sparkles(position)
-  local amount = love.math.random(4) + 3
+  local amount = love.math.random(10) + 5
   for _ = 1, amount do
     local parameters = {
       position = { unpack(position) },
@@ -63,12 +63,12 @@ function world:generate_explosion(position)
       position = { unpack(position) },
       angle = angle + i  * 45,
       radius = love.math.random(6) + 3,
-      speed = love.math.random(16) + 16,
+      speed = love.math.random(16) + 8,
       life = (love.math.random(5) + 1) / 3,
       color = SMOKES[love.math.random(#SMOKES)]
     }
-    local debris = self.entities:create('sparkle', parameters) -- debris shrink with age
-    self.entities:push(debris)
+    local smoke = self.entities:create('smoke', parameters) -- debris shrink with age
+    self.entities:push(smoke)
   end
 end
 

@@ -28,6 +28,7 @@ local Player = require('game.entities.player')
 local Bullet = require('game.entities.bullet')
 local Diver = require('game.entities.diver')
 local Spouter = require('game.entities.spouter')
+local Smoke = require('game.entities.smoke')
 local Sparkle = require('game.entities.sparkle')
 local graphics = require('lib.graphics')
 local utils = require('lib.utils')
@@ -157,6 +158,10 @@ function Entities:create(type, parameters)
     local sparkle = Sparkle.new()
     sparkle:initialize(self, parameters)
     return sparkle
+  elseif type == 'smoke' then
+    local smoke = Smoke.new()
+    smoke:initialize(self, parameters)
+    return smoke
   elseif type == 'debris' then
   else
   end
