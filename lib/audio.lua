@@ -22,14 +22,19 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
-local Entity = require('game.entities.entity')
-local graphics = require('lib.graphics')
-local soop = require('lib.soop')
-
 -- MODULE DECLARATION ----------------------------------------------------------
+
+local Audio = {
+}
+
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-local Player = soop.class(Entity)
+Audio.__index = Audio
+
+function Audio.new()
+  local self = setmetatable({}, Audio)
+  return self
+end
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
 
@@ -37,64 +42,32 @@ local Player = soop.class(Entity)
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-function Player:initialize(entities, parameters)
-  -- self.__base:initialize(parameters)
-  local base = self.__base
-  base.initialize(self, parameters)
-  
-  self.entities = entities
-  self.type = 'player'
-  self.radius = 5
-  self.life = 10
-end
-
-function Player:input(keys, dt)
-  local da, shoot = 0, false
-  if keys.pressed['left'] then
-    da = da - 5
-  end
-  if keys.pressed['right'] then
-    da = da + 5
-  end
-  if keys.pressed['x'] then
-    shoot = true
-  end
-
-  -- Update the player heading (angle)
-  self.angle = self.angle + da
-  
-  -- If the player is shooting, spawn a new projectile at the
-  -- current player position and with the same angle of direction.
-  if shoot then
-    self.entities.world.audio:play('shoot')
-    local bullet = self.entities:create('bullet', {
-        position = { unpack(self.position) },
-        angle = self.angle,
-        is_friendly = true
-      })
-    self.entities:push(bullet)
+function Audio:initialize(sounds)
+  self.sounds = {}
+  for id, sound in pairs(sounds) do
+    local source = love.audio.newSource(sound, 'static')
+    self.sounds[id] = source
   end
 end
 
-function Player:update(dt)
+function Audio:halt()
 end
 
-function Player:draw()
-  -- Find the facing point on the circle by casting the current position
-  -- according to the heading angle.
-  local cx, cy = unpack(self.position)
-  local x, y = self:cast(self.radius)
-
-  graphics.circle(cx, cy, self.radius, 'white')
---  graphics.line(cx, cy, x, y, 'blue')
-  graphics.circle(x, y , 2, 'gray')
-end
-
-function Player:reset()
+function Audio:play(id, volume)
+  local source = self.sounds[id]
+  if source then
+    -- TODO: clone the sound and play it?
+    source:setVolume(volume or 1.0)
+    if source:isPlaying() then
+      source:rewind()
+    else
+      source:play()
+    end
+  end
 end
 
 -- END OF MODULE ---------------------------------------------------------------
 
-return Player
+return Audio
 
 -- END OF FILE -----------------------------------------------------------------

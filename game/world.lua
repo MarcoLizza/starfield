@@ -26,6 +26,7 @@ local constants = require('game.constants')
 local Entities = require('game.entities')
 local Hud = require('game.hud')
 local Shaker = require('game.shaker')
+local Audio = require('lib.audio')
 local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
@@ -121,6 +122,14 @@ function world:initialize()
   self.shaker = Shaker.new()
   self.shaker:initialize()
 
+  self.audio = Audio.new()
+  self.audio:initialize({
+      ['explode'] = 'assets/sounds/explosion.wav',
+      ['die'] = 'assets/sounds/explosion2.wav',
+      ['hit'] = 'assets/sounds/hit.wav',
+      ['shoot'] = 'assets/sounds/shoot.wav'
+    })
+
   self.ticker = 0
 end
 
@@ -131,6 +140,7 @@ end
 
 function world:input(keys)
   self.entities:input(keys)
+--  self.audio:play('shoot')
   
   if keys.pressed['q'] then
     self.shaker:add(1)
@@ -156,9 +166,11 @@ function world:update(dt)
           entity:kill()
           player:hit()
           self:generate_explosion(entity.position)
+          self.audio:play('explode')
           self.shaker:add(1)
           if not player:is_alive() then
             self:generate_explosion(player.position)
+            self.audio:play('die')
             self.shaker:add(7)
           end
         end
@@ -166,9 +178,11 @@ function world:update(dt)
           entity:kill()
           player:hit()
           self:generate_sparkles(entity.position)
+          self.audio:play('explode')
           self.shaker:add(1)
           if not player:is_alive() then
             self:generate_explosion(player.position)
+            self.audio:play('die')
             self.shaker:add(7)
           end
         end
@@ -188,9 +202,11 @@ function world:update(dt)
               bullet:kill()
               entity:hit()
               self:generate_sparkles(bullet.position)
+              self.audio:play('hit')
               self.shaker:add(1)
               if not entity:is_alive() then
                 self:generate_explosion(entity.position)
+                self.audio:play('explode')
                 self.shaker:add(3)
               end
             end
@@ -201,7 +217,7 @@ function world:update(dt)
 
   -- Spaw a new foe from time to time
   self.ticker = self.ticker + dt
-  if self.ticker >= 5 then
+  if self.ticker >= 3 then
 --    local foe = self.entities:create('foe', self:randomize_foe_parameters())
     local foe = self.entities:create('spouter', self:randomize_foe_parameters())
     self.entities:push(foe)
