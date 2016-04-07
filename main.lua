@@ -42,7 +42,7 @@ function love.load(args)
 
   -- Initializes the input handler.
   _input = Input.new()
-  _input:initialize({ up = 'move_vertical', down = 'move_vertical', left = 'move_horizontal', right = 'move_horizontal', x = 'action' },
+  _input:initialize({ up = 'move_vertical', down = 'move_vertical', left = 'move_horizontal', right = 'move_horizontal', x = 'action', q = 'action' },
     { move_horizontal = 0.01, move_vertical = 0.01, action = math.huge })
 
   -- Initializes the state-engine.

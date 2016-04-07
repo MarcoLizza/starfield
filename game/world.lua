@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 local constants = require('game.constants')
 local Entities = require('game.entities')
 local Hud = require('game.hud')
+local Shaker = require('game.shaker')
 local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
@@ -116,7 +117,10 @@ function world:initialize()
 
   self.hud = Hud.new()
   self.hud:initialize(self)
-  
+
+  self.shaker = Shaker.new()
+  self.shaker:initialize()
+
   self.ticker = 0
 end
 
@@ -127,11 +131,17 @@ end
 
 function world:input(keys)
   self.entities:input(keys)
+  
+  if keys.pressed['q'] then
+    self.shaker:add(1)
+  end
 end
 
 function world:update(dt)
-  -- TODO: should resolve collisions HERE, by projecting movements.
+  self.shaker:update(dt)
   
+  -- TODO: should resolve collisions HERE, by projecting movements.
+
   self.entities:update(dt)
   self.hud:update(dt)
 
@@ -146,16 +156,20 @@ function world:update(dt)
           entity:kill()
           player:hit()
           self:generate_explosion(entity.position)
+          self.shaker:add(1)
           if not player:is_alive() then
             self:generate_explosion(player.position)
+            self.shaker:add(7)
           end
         end
         if entity.type == 'bullet' and not entity.is_friendly and player:collide(entity) then
           entity:kill()
           player:hit()
           self:generate_sparkles(entity.position)
+          self.shaker:add(1)
           if not player:is_alive() then
             self:generate_explosion(player.position)
+            self.shaker:add(7)
           end
         end
         return true -- always continue, we need to consider all the collisions!
@@ -174,8 +188,10 @@ function world:update(dt)
               bullet:kill()
               entity:hit()
               self:generate_sparkles(bullet.position)
+              self.shaker:add(1)
               if not entity:is_alive() then
                 self:generate_explosion(entity.position)
+                self.shaker:add(3)
               end
             end
           end
@@ -194,8 +210,10 @@ function world:update(dt)
 end
 
 function world:draw()
+  self.shaker:pre()
   self.entities:draw()
   self.hud:draw()
+  self.shaker:post()
 end
 
 -- END OF MODULE -------------------------------------------------------------
