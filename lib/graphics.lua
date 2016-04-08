@@ -194,10 +194,6 @@ local FONTS = {
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-local function to_screen(x, y)
-  return (x - 1) * constants.CELL_WIDTH, (y - 1) * constants.CELL_WIDTH
-end
-
 function graphics.fill(color, alpha)
   color = type(color) == 'table' and color or COLORS[color]
   alpha = alpha or 255
@@ -240,6 +236,20 @@ function graphics.circle(x, y, radius, color, alpha)
 
   love.graphics.setColor({ r, g, b, alpha })
   love.graphics.circle('fill', x, y, radius, 100)
+end
+
+function graphics.line(x0, y0, x1, y1, color, alpha)
+  color = type(color) == 'table' and color or COLORS[color]
+  alpha = alpha or 255
+
+  if alpha == 0 then
+    return
+  end
+
+  local r, g, b = unpack(color)
+
+  love.graphics.setColor({ r, g, b, alpha })
+  love.graphics.line({x0, y0, x1, y1 })
 end
 
 function graphics.text(text, rectangle, face, color, halign, valign, scale)

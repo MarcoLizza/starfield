@@ -75,7 +75,11 @@ function Sparkle:draw()
   
   local cx, cy = unpack(self.position)
   local alpha = self.life / self.reference
-  graphics.circle(cx, cy, self.radius, self.color, easing.hill(alpha) * 255)
+  -- Scale the speed to 1/20th in order to get the length of the sparkle
+  -- trail. Needs to be least one pixel long.
+  local trail = math.max(1, self.speed / 20)
+  local x, y = self:cast(trail)
+  graphics.line(cx, cy, x, y, self.color, easing.hill(alpha) * 255)
 end
 
 -- END OF MODULE ---------------------------------------------------------------
