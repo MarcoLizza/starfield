@@ -238,9 +238,10 @@ function graphics.circle(x, y, radius, color, alpha)
   love.graphics.circle('fill', x, y, radius, 100)
 end
 
-function graphics.line(x0, y0, x1, y1, color, alpha)
+function graphics.line(x0, y0, x1, y1, color, alpha, width)
   color = type(color) == 'table' and color or COLORS[color]
   alpha = alpha or 255
+  width = widrh or 1
 
   if alpha == 0 then
     return
@@ -249,6 +250,7 @@ function graphics.line(x0, y0, x1, y1, color, alpha)
   local r, g, b = unpack(color)
 
   love.graphics.setColor({ r, g, b, alpha })
+  love.graphics.setLineWidth(width)
   love.graphics.line({x0, y0, x1, y1 })
 end
 
