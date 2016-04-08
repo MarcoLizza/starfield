@@ -209,7 +209,7 @@ function graphics.fill(color, alpha)
       constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
 end
 
-function graphics.square(x, y, color, alpha)
+function graphics.square(x, y, size, color, alpha)
   color = type(color) == 'table' and color or COLORS[color]
   alpha = alpha or 255
 
@@ -221,7 +221,7 @@ function graphics.square(x, y, color, alpha)
   
   love.graphics.setColor({ r, g, b, alpha })
   love.graphics.rectangle('fill', x, y,
-      constants.CELL_WIDTH, constants.CELL_HEIGHT)
+      size, size)
 end
 
 function graphics.circle(x, y, radius, color, alpha)
@@ -241,7 +241,7 @@ end
 function graphics.line(x0, y0, x1, y1, color, alpha, width)
   color = type(color) == 'table' and color or COLORS[color]
   alpha = alpha or 255
-  width = widrh or 1
+  width = width or 1
 
   if alpha == 0 then
     return

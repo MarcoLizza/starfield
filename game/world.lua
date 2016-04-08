@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 local constants = require('game.constants')
 local Entities = require('game.entities')
 local Hud = require('game.hud')
+local Starfield = require('game.starfield')
 local Shaker = require('game.shaker')
 local Audio = require('lib.audio')
 local utils = require('lib.utils')
@@ -111,13 +112,15 @@ end
 function world:initialize()
   self.width = constants.SCREEN_WIDTH
   self.height = constants.SCREEN_HEIGHT
-  self.margin = constants.CELL_SIZE
 
   self.entities = Entities.new()
   self.entities:initialize(self)
 
   self.hud = Hud.new()
   self.hud:initialize(self)
+
+  self.starfield = Starfield.new()
+  self.starfield:initialize(5, 128, 5, 25) -- width, height
 
   self.shaker = Shaker.new()
   self.shaker:initialize()
@@ -148,6 +151,7 @@ end
 
 function world:update(dt)
   self.audio:update(dt)
+  self.starfield:update(dt)
   self.shaker:update(dt)
   
   -- TODO: should resolve collisions HERE, by projecting movements.
@@ -227,6 +231,7 @@ end
 
 function world:draw()
   self.shaker:pre()
+  self.starfield:draw()
   self.entities:draw()
   self.hud:draw()
   self.shaker:post()
