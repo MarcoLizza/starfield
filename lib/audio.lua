@@ -45,24 +45,72 @@ end
 function Audio:initialize(sounds)
   self.sounds = {}
   for id, sound in pairs(sounds) do
-    local source = love.audio.newSource(sound, 'static')
-    self.sounds[id] = source
+    local source = love.audio.newSource(sound.file, 'static')
+    self.sounds[id] = {
+        source = source,
+        overlayed = sound.overlayed,
+        looping = sound.looping, instances = {}
+      }
+  end
+end
+
+function Audio:deinitialize()
+  self:halt()
+  self.sounds = {}
+end
+
+function Audio:update(dt)
+  -- For each sound source, find the inactive instances and remove them
+  -- to release the resource.
+  for _, sound in pairs(self.sounds) do
+    local zombies = {}
+    for index, instance in ipairs(sound.instances) do
+      if not instance:isPlaying() then
+        zombies[#zombies + 1] = index
+      end
+    end
+    for _, index in ipairs(zombies) do
+      table.remove(sound.instances, index)
+    end
   end
 end
 
 function Audio:halt()
+  for _, sound in pairs(self.sounds) do
+    for _, instance in ipairs(sound.instances) do
+      instance:stop()
+    end
+    sound.instances = {}
+  end
 end
 
 function Audio:play(id, volume)
-  local source = self.sounds[id]
-  if source then
-    -- TODO: clone the sound and play it?
-    source:setVolume(volume or 1.0)
-    if source:isPlaying() then
-      source:rewind()
-    else
-      source:play()
-    end
+  -- Retrieve the sound by id, and if not existing bail out.
+  local sound = self.sounds[id]
+  if not sound then
+    return
+  end
+
+  -- Create a new source clone if the sound is multilayer or
+  -- it's the first one of a "no-layered" one.
+  if sound.overlayed or #sound.instances == 0 then
+    local instance = sound.source:clone()
+    instance:setVolume(volume or 1.0)
+    instance:setLooping(sound.looping)
+
+    sound.instances[#sound.instances + 1] = instance
+  end
+
+  -- In every case, the source to be controlled is the last
+  -- instance.
+  local instance = sound.instances[#sound.instances]
+
+  -- If the sound instance is playing (i.e. it's a non-layered sound already
+  -- playing) we rewind it to retrigger. Otherwise, we start it!
+  if instance:isPlaying() then
+    instance:rewind()
+  else
+    instance:play()
   end
 end
 

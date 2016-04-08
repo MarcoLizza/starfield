@@ -66,7 +66,7 @@ function Player:input(keys, dt)
   -- If the player is shooting, spawn a new projectile at the
   -- current player position and with the same angle of direction.
   if shoot then
-    self.entities.world.audio:play('shoot')
+    self.entities.world.audio:play('shoot', 0.25)
     local bullet = self.entities:create('bullet', {
         position = { unpack(self.position) },
         angle = self.angle,

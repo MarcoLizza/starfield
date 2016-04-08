@@ -124,10 +124,10 @@ function world:initialize()
 
   self.audio = Audio.new()
   self.audio:initialize({
-      ['explode'] = 'assets/sounds/explosion.wav',
-      ['die'] = 'assets/sounds/explosion2.wav',
-      ['hit'] = 'assets/sounds/hit.wav',
-      ['shoot'] = 'assets/sounds/shoot.wav'
+      ['explode'] = { file = 'assets/sounds/explosion.wav', overlayed = true, looping = false },
+      ['die'] = { file = 'assets/sounds/explosion2.wav', overlayed = true, looping = false },
+      ['hit'] = { file = 'assets/sounds/hit.wav', overlayed = true, looping = false },
+      ['shoot'] = { file = 'assets/sounds/shoot.wav', overlayed = false, looping = false },
     })
 
   self.ticker = 0
@@ -140,14 +140,14 @@ end
 
 function world:input(keys)
   self.entities:input(keys)
---  self.audio:play('shoot')
-  
+
   if keys.pressed['q'] then
     self.shaker:add(1)
   end
 end
 
 function world:update(dt)
+  self.audio:update(dt)
   self.shaker:update(dt)
   
   -- TODO: should resolve collisions HERE, by projecting movements.
@@ -166,7 +166,7 @@ function world:update(dt)
           entity:kill()
           player:hit()
           self:generate_explosion(entity.position)
-          self.audio:play('explode')
+          self.audio:play('explode', 0.75)
           self.shaker:add(1)
           if not player:is_alive() then
             self:generate_explosion(player.position)
@@ -178,7 +178,7 @@ function world:update(dt)
           entity:kill()
           player:hit()
           self:generate_sparkles(entity.position)
-          self.audio:play('explode')
+          self.audio:play('hit', 0.50)
           self.shaker:add(1)
           if not player:is_alive() then
             self:generate_explosion(player.position)
@@ -202,11 +202,11 @@ function world:update(dt)
               bullet:kill()
               entity:hit()
               self:generate_sparkles(bullet.position)
-              self.audio:play('hit')
+              self.audio:play('hit', 0.50)
               self.shaker:add(1)
               if not entity:is_alive() then
                 self:generate_explosion(entity.position)
-                self.audio:play('explode')
+                self.audio:play('explode', 0.75)
                 self.shaker:add(3)
               end
             end
