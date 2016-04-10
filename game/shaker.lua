@@ -44,10 +44,11 @@ end
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-function Shaker:initialize(frequency, dampening, amplitude)
+function Shaker:initialize(frequency, dampening, amplitude, cap)
   self.frequency = frequency or 100
   self.dampening = dampening or 10
   self.amplitude = amplitude or 3
+  self.cap = cap or 10
   self:reset()
 end
 
@@ -57,7 +58,7 @@ function Shaker:reset()
 end
 
 function Shaker:add(amount)
-  self.amount = self.amount + amount
+  self.amount = math.min(self.cap, self.amount + amount)
 end
 
 function Shaker:update(dt)
