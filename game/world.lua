@@ -166,6 +166,9 @@ function world:update(dt)
 
   -- Scan the entities, resolving collisions with the foes.
   self.entities:iterate(function(entity)
+        if not player then
+          return
+        end
         if entity.type == 'foe' and player:collide(entity) then
           entity:kill()
           player:hit()
