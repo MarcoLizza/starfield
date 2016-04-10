@@ -54,7 +54,7 @@ function Starfield:initialize(layers, stars_per_layer, min_speed, max_speed)
   for i = 1, layers do
     local layer = {
         speed = step * (i - 1) + min_speed,
-        alpha = (255 / layers) * (i - 1),
+        alpha = (255 / (layers - 1)) * (i - 1),
         stars = {}
       }
     for _ = 1, stars_per_layer do
