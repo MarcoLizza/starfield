@@ -22,8 +22,6 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
-local utils = require('lib.utils')
-
 -- MODULE DECLARATION ----------------------------------------------------------
 
 local Shaker = {
@@ -48,7 +46,7 @@ function Shaker:initialize(frequency, dampening, amplitude, cap)
   self.frequency = frequency or 100
   self.dampening = dampening or 10
   self.amplitude = amplitude or 3
-  self.cap = cap or 10
+  self.cap = cap or 7
   self:reset()
 end
 
