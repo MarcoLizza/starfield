@@ -172,11 +172,11 @@ function world:update(dt)
         if entity.type == 'foe' and player:collide(entity) then
           entity:kill()
           player:hit()
-          self:generate_explosion(entity.position)
+          self:generate_explosion(entity.position, 8)
           self.audio:play('explode', 0.75)
           self.shaker:add(1)
           if not player:is_alive() then
-            self:generate_explosion(player.position)
+            self:generate_explosion(player.position, 16)
             self.audio:play('die')
             self.shaker:add(7)
           end
@@ -188,7 +188,7 @@ function world:update(dt)
           self.audio:play('hit', 0.50)
           self.shaker:add(1)
           if not player:is_alive() then
-            self:generate_explosion(player.position)
+            self:generate_explosion(player.position, 16)
             self.audio:play('die')
             self.shaker:add(7)
           end
@@ -212,7 +212,7 @@ function world:update(dt)
               self.audio:play('hit', 0.50)
               self.shaker:add(1)
               if not entity:is_alive() then
-                self:generate_explosion(entity.position)
+                self:generate_explosion(entity.position, 8)
                 self.audio:play('explode', 0.75)
                 self.shaker:add(3)
               end

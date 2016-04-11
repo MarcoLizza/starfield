@@ -33,7 +33,7 @@ local constants = {
 
 constants.VERSION = '0.1.0'
 
-constants.IDENTITY = 'Siege!'
+constants.IDENTITY = 'StarField'
 
 constants.SCREEN_WIDTH = 400
 constants.SCREEN_HEIGHT = 400

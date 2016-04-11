@@ -41,7 +41,6 @@ function game:initialize(environment)
 end
 
 function game:enter()
-  -- Reset to the first ("prologue") level.
   self:reset()
 end
 
