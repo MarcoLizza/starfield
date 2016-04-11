@@ -86,7 +86,7 @@ function world:generate_score(position, angle, points)
     speed = 32 + 16 * factor,
     text = string.format('%d', points),
     color = 'white',
-    scale = 1 + factor,
+    scale = 2 + factor,
     life = 1 + factor * 0.5
   }
   local score = self.entities:create('bubble', parameters)
