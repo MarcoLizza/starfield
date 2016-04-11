@@ -59,7 +59,7 @@ end
 function gameover:leave()
 end
 
-function gameover:input(keys)
+function gameover:input(keys, dt)
   if keys.pressed['x'] then
     self.continue = true
   end

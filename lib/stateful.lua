@@ -70,12 +70,12 @@ function Stateful:switch_to(key)
 end
 
 -- Handles the input from the user.
-function Stateful:input(keys)
+function Stateful:input(keys, dt)
   -- Current state not defined, bail out.
   if not self.current then
     return
   end
-  self.current:input(keys)
+  self.current:input(keys, dt)
 end
 
 -- Update the current state, if any. Also handle the state-switch mechanism.

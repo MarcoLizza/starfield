@@ -43,7 +43,7 @@ function love.load(args)
   -- Initializes the input handler.
   _input = Input.new()
   _input:initialize({ up = 'move_vertical', down = 'move_vertical', left = 'move_horizontal', right = 'move_horizontal', x = 'action', q = 'action' },
-    { move_horizontal = 0.01, move_vertical = 0.01, action = 0.20 })
+    { move_horizontal = 0, move_vertical = 0.01, action = 0.20 })
 
   -- Initializes the state-engine.
   _stateful = Stateful.new()
@@ -72,7 +72,7 @@ function love.update(dt)
   -- propagate to the state manager.
   local keys = _input:update(dt)
   if keys.amount > 0 then
-    _stateful:input(keys)
+    _stateful:input(keys, dt)
   end
   
   -- Update the state manager.

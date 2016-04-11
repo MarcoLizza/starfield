@@ -109,7 +109,7 @@ end
 function menu:leave()
 end
 
-function menu:input(keys)
+function menu:input(keys, dt)
   if keys.pressed['x'] then
     self.continue = true
   end

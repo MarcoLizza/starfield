@@ -52,8 +52,8 @@ end
 function game:leave()
 end
 
-function game:input(keys)
-  self.world:input(keys)
+function game:input(keys, dt)
+  self.world:input(keys, dt)
 end
 
 function game:update(dt)

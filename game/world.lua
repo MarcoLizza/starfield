@@ -141,8 +141,8 @@ function world:generate()
 --  self.ticker = 0
 end
 
-function world:input(keys)
-  self.entities:input(keys)
+function world:input(keys, dt)
+  self.entities:input(keys, dt)
 
   if keys.pressed['q'] then
     self.shaker:add(1)

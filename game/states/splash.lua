@@ -52,7 +52,7 @@ function splash:leave()
   self.image = nil
 end
 
-function splash:input(keys)
+function splash:input(keys, dt)
 end
 
 function splash:update(dt)
