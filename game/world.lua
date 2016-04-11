@@ -183,7 +183,10 @@ function world:input(keys, dt)
   self.entities:input(keys, dt)
 
   if keys.pressed['q'] then
-    self.shaker:add(1)
+    local player = self.entities:find(function(entity)
+          return entity.type == 'player'
+        end)
+    player.life = 0
   end
 end
 

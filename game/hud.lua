@@ -63,13 +63,23 @@ function Hud:draw()
         return entity.type == 'player'
       end)
 
-  local life = math.floor(player and player.life or 0)
-  local score = math.floor(world.score or 0)
+  -- If the player entity is nowhere to be found, then it's dead. So, overlay
+  -- a "GAME OVER" message and bail out!
+  if not player then
+    graphics.fill('black', 191)
+    graphics.text('GAME OVER',
+        { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
+        'retro-computer', 'white', 'center', 'middle', 3)
+    return
+  end
+
+  -- Retrieve and display both the player life amount and score.
+  local life = math.floor(player.life)
+  local score = math.floor(world.score)
 
   graphics.text(string.format('LIFE: %d', life, 0),
       { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
       'retro-computer', 'white', 'left', 'bottom', 1)
-
   graphics.text(string.format('SCORE: %d', score, 0),
       { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
       'retro-computer', 'yellow', 'right', 'bottom', 1)
