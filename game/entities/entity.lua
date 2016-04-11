@@ -60,10 +60,7 @@ function Entity:collide(other)
 end
 
 function Entity:cast(modulo)
-  local angle = utils.to_radians(self.angle)
-
-  local vx, vy = math.cos(angle) * modulo, math.sin(angle) * modulo
-  
+  local vx, vy = math.cos(self.angle) * modulo, math.sin(self.angle) * modulo
   local cx, cy = unpack(self.position)
   return cx + vx, cy + vy
 end

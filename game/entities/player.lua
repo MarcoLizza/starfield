@@ -44,6 +44,7 @@ function Player:initialize(entities, parameters)
   
   self.entities = entities
   self.type = 'player'
+  self.speed = math.pi -- angular speed, of course
   self.radius = 5
   self.life = 10
 end
@@ -51,10 +52,10 @@ end
 function Player:input(keys, dt)
   local da, shoot = 0, false
   if keys.pressed['left'] then
-    da = da - 5
+    da = da - self.speed * dt
   end
   if keys.pressed['right'] then
-    da = da + 5
+    da = da + self.speed * dt
   end
   if keys.pressed['x'] then
     shoot = true

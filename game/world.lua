@@ -49,7 +49,7 @@ function world:generate_sparkles(position)
     -- particle (white->yellow->orange->red->brown)
     local parameters = {
       position = { unpack(position) },
-      angle = math.floor(love.math.random() * 360),
+      angle = love.math.random() * 2 * math.pi,
       radius = 1,
       speed = (love.math.random() * 128) + 64,
       life = (love.math.random() * 1) + 0.5
@@ -60,7 +60,7 @@ function world:generate_sparkles(position)
 end
 
 function world:generate_explosion(position, amount)
-  local step = 360 / amount
+  local step = (2 * math.pi) / amount
   for i = 0, amount do
     local parameters = {
       position = { unpack(position) },
@@ -96,11 +96,11 @@ function world:randomize_foe_parameters()
   -- target position to an angle.
   local cx, cy = math.floor(self.width / 2), math.floor(self.height / 2)
   local dx, dy = love.math.random(cx - 32, cx + 32) - 1, love.math.random(cy - 32, cy + 32) - 1
-  local atan2 = math.atan2(dy - y, dx - x)
+  local angle = math.atan2(dy - y, dx - x)
   -- Return the resulting table.
   return {
       position = { x, y },
-      angle = utils.to_degrees(atan2),
+      angle = angle,
       speed = love.math.random() * 32 + 32,
       rate = 5,
       wander = 2
