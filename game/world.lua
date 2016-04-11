@@ -120,7 +120,7 @@ function world:initialize()
   self.hud:initialize(self)
 
   self.starfield = Starfield.new()
-  self.starfield:initialize(5, 128, 5, 25) -- width, height
+  self.starfield:initialize()
 
   self.shaker = Shaker.new()
   self.shaker:initialize()

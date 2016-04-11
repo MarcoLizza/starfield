@@ -22,9 +22,9 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
+local config = require('game.config')
 local constants = require('game.constants')
 local graphics = require('lib.graphics')
-local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 
@@ -46,18 +46,19 @@ end
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-function Starfield:initialize(layers, stars_per_layer, min_speed, max_speed)
+function Starfield:initialize()
   self.angle = 0
   self.ticker = 0
   self.layers = {}
-  local step = (max_speed - min_speed) / (layers - 1)
-  for i = 1, layers do
+  local steps = config.starfield.layers - 1
+  local step = (config.starfield.max_speed - config.starfield.min_speed) / steps
+  for i = 1, config.starfield.layers do
     local layer = {
-        speed = step * (i - 1) + min_speed,
-        alpha = (255 / (layers - 1)) * (i - 1),
+        speed = step * (i - 1) + config.starfield.min_speed,
+        alpha = (255 / steps) * (i - 1),
         stars = {}
       }
-    for _ = 1, stars_per_layer do
+    for _ = 1, config.starfield.stars_per_layer do
       layer.stars[#layer.stars + 1] = {
           position = { love.math.random(constants.SCREEN_WIDTH), love.math.random(constants.SCREEN_HEIGHT) }
         }
@@ -68,8 +69,8 @@ end
 
 function Starfield:update(dt)
   self.ticker = self.ticker + dt
-  if self.ticker >= 30 then
-    self.angle = utils.to_radians(love.math.random(360) - 1)
+  if self.ticker >= config.starfield.reorient_timeout then
+    self.angle = love.math.random() * 2 * math.pi
     self.ticker = 0
   end
 
