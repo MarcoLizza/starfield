@@ -94,6 +94,23 @@ function world:generate_score(position, angle, points)
   self.score = self.score + points
 end
 
+function world:generate_damage(position, angle, damage)
+  -- We determine a "magnitude" factor based on the amunt of points,
+  -- so that bigger points will move farther aways, last longer, and
+  -- are displayed bigger!
+  local parameters = {
+    position = { unpack(position) },
+    angle = angle + math.pi, -- bound back!
+    speed = 16,
+    text = string.format('-%d', damage),
+    color = 'red',
+    scale = 2,
+    life = 1
+  }
+  local damage = self.entities:create('bubble', parameters)
+  self.entities:push(damage)
+end
+
 function world:randomize_foe_parameters()
   -- Pick a border and position from which the foe will be spawned.
   local border = love.math.random(4)
@@ -201,6 +218,7 @@ function world:update(dt)
             self.audio:play('die')
             self.shaker:add(7)
           end
+          self:generate_damage(player.position, player.angle, 1)
         end
         if entity.type == 'bullet' and not entity.is_friendly and player:collide(entity) then
           entity:kill()
