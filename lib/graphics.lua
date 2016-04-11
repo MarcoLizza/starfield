@@ -251,14 +251,19 @@ function graphics.line(x0, y0, x1, y1, color, alpha, width)
 
   love.graphics.setColor({ r, g, b, alpha })
   love.graphics.setLineWidth(width)
-  love.graphics.line({x0, y0, x1, y1 })
+  love.graphics.line({ x0, y0, x1, y1 })
 end
 
-function graphics.text(text, rectangle, face, color, halign, valign, scale)
+function graphics.text(text, rectangle, face, color, halign, valign, scale, alpha)
   color = type(color) == 'table' and color or COLORS[color]
+  alpha = alpha or 255
   halign = halign or 'center'
   valign = valign or 'middle'
   scale = scale or 1
+  
+  if alpha == 0 then
+    return
+  end
   
   local font = FONTS[face]
   
@@ -279,10 +284,12 @@ function graphics.text(text, rectangle, face, color, halign, valign, scale)
     end
   end
   
+  local r, g, b = unpack(color)
+  
   love.graphics.push()
   love.graphics.scale(scale)
   love.graphics.setFont(font)
-  love.graphics.setColor(color)
+  love.graphics.setColor({ r, g, b, alpha })
   love.graphics.print(text, x / scale, y / scale)
   love.graphics.pop()
 end

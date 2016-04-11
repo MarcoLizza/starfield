@@ -22,24 +22,15 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
-local constants = require('game.constants')
-local collections = require('lib.collections')
+local Entity = require('game.entities.entity')
 local graphics = require('lib.graphics')
-local utils = require('lib.utils')
+local soop = require('lib.soop')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 
-local Hud = {
-}
-
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
-Hud.__index = Hud
-
-function Hud.new()
-  local self = setmetatable({}, Hud)
-  return self
-end
+local Bubble = soop.class(Entity)
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
 
@@ -47,36 +38,51 @@ end
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
-function Hud:initialize(world)
-  self.world = world
+function Bubble:initialize(entities, parameters)
+--  self.__base:initialize(parameters)
+  local base = self.__base
+  base.initialize(self, parameters)
+  
+  self.entities = entities
+  self.type = 'bubble'
+  self.speed = parameters.speed
+  self.text = parameters.text
+  self.color = parameters.color
+  self.scale = parameters.scale
+  self.life = parameters.life
+  self.reference = self.life
 end
 
-function Hud:update(dt)
+function Bubble:input(keys, dt)
 end
 
-function Hud:draw()
-  local world = self.world
-  local entities = world.entities
+function Bubble:update(dt)
+  -- Decrease the current particle life. If "dead" bail out.
+  if self.life > 0 then
+    self.life = self.life - dt
+  end
+  if self.life <= 0 then
+    return
+  end
+  
+  -- Compute the current bullet velocity and update its position.
+  self.position = { self:cast(self.speed * dt) }
+end
 
-  -- Find the player entity (we should cache it?)
-  local player = entities:find(function(entity)
-        return entity.type == 'player'
-      end)
-
-  local life = math.floor(player and player.life or 0)
-  local score = math.floor(world.score or 0)
-
-  graphics.text(string.format('LIFE: %d', life, 0),
-      { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
-      'retro-computer', 'white', 'left', 'bottom', 1)
-
-  graphics.text(string.format('SCORE: %d', score, 0),
-      { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
-      'retro-computer', 'yellow', 'right', 'bottom', 1)
+function Bubble:draw()
+  if self.life <= 0 then
+    return
+  end
+  
+  local alpha = self.life / self.reference
+  
+  local cx, cy = unpack(self.position)
+  graphics.text(self.text, { cx, cy },
+      'silkscreen', self.color, 'center', 'middle', self.scale, 255 * alpha)
 end
 
 -- END OF MODULE ---------------------------------------------------------------
 
-return Hud
+return Bubble
 
 -- END OF FILE -----------------------------------------------------------------

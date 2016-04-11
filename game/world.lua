@@ -75,6 +75,25 @@ function world:generate_explosion(position, amount)
   end
 end
 
+function world:generate_score(position, angle, points)
+  -- We determine a "magnitude" factor based on the amunt of points,
+  -- so that bigger points will move farther aways, last longer, and
+  -- are displayed bigger!
+  local factor = math.floor(points / 10)
+  local parameters = {
+    position = { unpack(position) },
+    angle = angle + math.pi, -- bound back!
+    speed = 32 + 16 * factor,
+    text = string.format('%d', points),
+    color = 'white',
+    scale = 1 + factor,
+    life = 1 + factor * 0.5
+  }
+  local score = self.entities:create('bubble', parameters)
+  self.entities:push(score)
+  self.score = self.score + points
+end
+
 function world:randomize_foe_parameters()
   -- Pick a border and position from which the foe will be spawned.
   local border = love.math.random(4)
@@ -134,6 +153,8 @@ function world:initialize()
     })
 
   self.ticker = 0
+  
+  self.score = 0
 end
 
 function world:generate()
@@ -164,7 +185,7 @@ function world:update(dt)
         return entity.type == 'player'
       end)
 
-  -- Scan the entities, resolving collisions with the foes.
+  -- Scan the foes and enemy bullets, resolving collisions with the player.
   self.entities:iterate(function(entity)
         if not player then
           return
@@ -172,11 +193,11 @@ function world:update(dt)
         if entity.type == 'foe' and player:collide(entity) then
           entity:kill()
           player:hit()
-          self:generate_explosion(entity.position, 8)
+          self:generate_explosion(entity.position, 16)
           self.audio:play('explode', 0.75)
-          self.shaker:add(1)
+          self.shaker:add(3)
           if not player:is_alive() then
-            self:generate_explosion(player.position, 16)
+            self:generate_explosion(player.position, 32)
             self.audio:play('die')
             self.shaker:add(7)
           end
@@ -188,7 +209,7 @@ function world:update(dt)
           self.audio:play('hit', 0.50)
           self.shaker:add(1)
           if not player:is_alive() then
-            self:generate_explosion(player.position, 16)
+            self:generate_explosion(player.position, 32)
             self.audio:play('die')
             self.shaker:add(7)
           end
@@ -208,14 +229,17 @@ function world:update(dt)
             if entity:collide(bullet) then
               bullet:kill()
               entity:hit()
+              local score = 5
               self:generate_sparkles(bullet.position)
               self.audio:play('hit', 0.50)
               self.shaker:add(1)
               if not entity:is_alive() then
-                self:generate_explosion(entity.position, 8)
+                score = 10
+                self:generate_explosion(entity.position, 16)
                 self.audio:play('explode', 0.75)
                 self.shaker:add(3)
               end
+              self:generate_score(entity.position, entity.angle, score)
             end
           end
         end

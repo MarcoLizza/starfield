@@ -30,6 +30,7 @@ local Diver = require('game.entities.diver')
 local Spouter = require('game.entities.spouter')
 local Smoke = require('game.entities.smoke')
 local Sparkle = require('game.entities.sparkle')
+local Bubble = require('game.entities.bubble')
 local graphics = require('lib.graphics')
 local utils = require('lib.utils')
 
@@ -162,8 +163,10 @@ function Entities:create(type, parameters)
     local smoke = Smoke.new()
     smoke:initialize(self, parameters)
     return smoke
-  elseif type == 'debris' then
-  else
+  elseif type == 'bubble' then
+    local bubble = Bubble.new()
+    bubble:initialize(self, parameters)
+    return bubble
   end
   return nil
 end
