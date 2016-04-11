@@ -55,6 +55,24 @@ function Hud:update(dt)
 end
 
 function Hud:draw()
+  local world = self.world
+  local entities = world.entities
+
+  -- Find the player entity (we should cache it?)
+  local player = self.entities:find(function(entity)
+        return entity.type == 'player'
+      end)
+
+  local life = math.floor(player and player.life or 0)
+  local points = math.floor(world.points or 0)
+
+  graphics.text(string.format('LIFE: %d', life, 0),
+      { 0, constants.SCREEN_HEIGHT * 2 / 3, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
+      'silkscreen', 'white', 'bottom', 'left', 2)
+
+  graphics.text(string.format('POINTS: %d', points, 0),
+      { 0, constants.SCREEN_HEIGHT * 2 / 3, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
+      'silkscreen', 'white', 'bottom', 'right', 2)
 end
 
 -- END OF MODULE ---------------------------------------------------------------
