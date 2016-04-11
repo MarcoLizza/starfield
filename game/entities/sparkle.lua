@@ -28,11 +28,14 @@ local easing = require('lib.easing')
 local soop = require('lib.soop')
 
 -- MODULE DECLARATION ----------------------------------------------------------
+
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
 local Sparkle = soop.class(Entity)
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
+
+local TINTS = { 'brown', 'orange', 'red', 'yellow', 'white' }
 
 -- LOCAL FUNCTIONS -------------------------------------------------------------
 
@@ -49,7 +52,6 @@ function Sparkle:initialize(entities, parameters)
   self.speed = parameters.speed
   self.life = parameters.life
   self.reference = parameters.life
-  self.color = parameters.color
 end
 
 function Sparkle:input(keys, dt)
@@ -72,14 +74,21 @@ function Sparkle:draw()
   if self.life <= 0 then
     return
   end
-  
-  local cx, cy = unpack(self.position)
+
+  -- This is used to track the (normalized) particle age.
   local alpha = self.life / self.reference
-  -- Scale the speed to 1/20th in order to get the length of the sparkle
-  -- trail. Needs to be least one pixel long.
+
+  -- We determine the current color, based on the sparkle age. Note that
+  -- this is a bit convoluted due to the Lua 1-based indices.
+  local color = TINTS[math.floor((#TINTS - 1) * easing.cubic(alpha)) + 1]
+
+  -- Draw the sparkle, by casting the trail scaling the speed to 1/20th in
+  -- order to get the length of the sparkle trail. Needs to be least one
+  -- pixel long.
+  local cx, cy = unpack(self.position)
   local trail = math.max(1, self.speed / 20)
   local x, y = self:cast(trail)
-  graphics.line(cx, cy, x, y, self.color, easing.hill(alpha) * 255)
+  graphics.line(cx, cy, x, y, color, easing.hill(alpha) * 255)
 end
 
 -- END OF MODULE ---------------------------------------------------------------

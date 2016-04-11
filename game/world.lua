@@ -37,37 +37,37 @@ local world = {
 
 -- LOCAL CONSTANTS -------------------------------------------------------------
 
-local TINTS = { 'yellow', 'red', 'orange' }
-
 local SMOKES = { 'white', 'lightgray', 'gray', 'darkgray' }
 
 -- LOCAL FUNCTIONS -------------------------------------------------------------
 
 function world:generate_sparkles(position)
-  local amount = love.math.random(10) + 5
+  local amount = math.floor(love.math.random() * 10 + 5)
   for _ = 1, amount do
+    -- Sparkles are fast moving and very small in size. They also disappear
+    -- quite quickly. The color of the sparkle depends on the "age" of the
+    -- particle (white->yellow->orange->red->brown)
     local parameters = {
       position = { unpack(position) },
-      angle = love.math.random(360) - 1,
+      angle = math.floor(love.math.random() * 360),
       radius = 1,
-      speed = love.math.random(64) + 64,
-      life = (love.math.random(2) + 1) / 3,
-      color = TINTS[love.math.random(#TINTS)]
+      speed = (love.math.random() * 128) + 64,
+      life = (love.math.random() * 1) + 0.5
     }
     local sparkle = self.entities:create('sparkle', parameters)
     self.entities:push(sparkle)
   end
 end
 
-function world:generate_explosion(position)
-  local angle = love.math.random(360) - 1
-  for i = 0, 15 do -- two full rounds, to generate twin smokes
+function world:generate_explosion(position, amount)
+  local step = 360 / amount
+  for i = 0, amount do
     local parameters = {
       position = { unpack(position) },
-      angle = angle + i  * 45,
-      radius = love.math.random(6) + 3,
-      speed = love.math.random(16) + 8,
-      life = (love.math.random(5) + 1) / 3,
+      angle = i  * step,
+      radius = love.math.random() * 6 + 3,
+      speed = love.math.random() * 16 + 8,
+      life = love.math.random() * 3 + 0.5,
       color = SMOKES[love.math.random(#SMOKES)]
     }
     local smoke = self.entities:create('smoke', parameters) -- debris shrink with age
@@ -101,7 +101,7 @@ function world:randomize_foe_parameters()
   return {
       position = { x, y },
       angle = utils.to_degrees(atan2),
-      speed = love.math.random(32) + 32,
+      speed = love.math.random() * 32 + 32,
       rate = 5,
       wander = 2
     }
@@ -110,8 +110,8 @@ end
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
 function world:initialize()
-  self.width = constants.SCREEN_WIDTH
-  self.height = constants.SCREEN_HEIGHT
+  self.width = constants.SCREEN_WIDTH 
+  self.height = constants.SCREEN_HEIGHT 
 
   self.entities = Entities.new()
   self.entities:initialize(self)
