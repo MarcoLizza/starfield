@@ -38,6 +38,7 @@ constants.IDENTITY = 'StarField'
 constants.SCREEN_WIDTH = 400
 constants.SCREEN_HEIGHT = 400
 constants.SCREEN_RECT = { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT }
+constants.SCREEN_CENTER = { constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2 }
 
 constants.WINDOW_WIDTH = constants.SCREEN_WIDTH * config.display.scale
 constants.WINDOW_HEIGHT = constants.SCREEN_HEIGHT * config.display.scale

@@ -64,7 +64,7 @@ function Entities:initialize(world)
   self.world = world
   
   local player = self:create('player', {
-      position = { math.floor(constants.SCREEN_WIDTH / 2), math.floor(constants.SCREEN_HEIGHT / 2) },
+      position = { unpack(constants.SCREEN_CENTER) },
       angle = 0
     })
   self:push(player)
@@ -94,42 +94,6 @@ function Entities:update(dt)
   for _, id in ipairs(zombies) do
     self.entities[id] = nil
   end
-
---  for key, entity
---  local exploded = {}
---  for id, projectile in pairs(self.projectiles) do
---    local is_dead = true
---    projectile.life = projectile.life - dt
---    if projectile.life > 0 then
---      local position = integrate(projectile.position, projectile.velocity, dt)
---      if not raycast(projectile.position, position,
---          function(position)
---            -- Check if the point at the current position is occupied by a foe.
---            for id, foe in pairs(foes) do
---              if not exploded[id] and utils.distance(position, foe.position) <= foe.radius then
---                exploded[#exploded + 1] = id
---                return true
---              end
---            end
---            return false
---          end) then
---        is_dead = false
---      end
---    end
---    if is_dead then
---      zombies[#zombies + 1] = id
---    end
---  end
-  
---  for _, id in ipairs(zombies) do
---    self.projectiles[id] = nil
---  end
-
---  for _, id in ipairs(exploded) do
---    local foe = self.projectiles[id]
---    -- SPAWN AN EXPLOSION
---    self.projectiles[id] = nil
---  end
 end
 
 function Entities:draw()
