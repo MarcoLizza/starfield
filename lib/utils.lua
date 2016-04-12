@@ -194,7 +194,9 @@ end
 function utils.delta(a, b, c, d)
   local dx, dy
   if type(a) == 'table' and type(b) == 'table' then
-    dx, dy = a.x - b.x, a.y - b.y
+    local ax, ay = unpack(a)
+    local bx, by = unpack(b)
+    dx, dy = ax - bx, ay - by
   else
     dx, dy = a - c, b - d
   end
@@ -209,7 +211,8 @@ end
 function utils.overlap(a, b, c, d)
   local ax, ay, bx, by = a, b, c, d
   if type(a) == 'table' and type(b) == 'table' then
-    ax, ay, bx, by = a.x, a.y, b.x, b.y
+    ax, ay = unpack(a)
+    bx, by = unpack(b)
   end
   return ax == bx and ay == by
 end
@@ -228,6 +231,12 @@ end
 
 function utils.to_degrees(angle)
   return angle * 57.295779513082320876798154814105
+end
+
+function utils.angle_to(from, to)
+  local fx, fy = unpack(from)
+  local tx, ty = unpack(to)
+  return math.atan2(ty - fy, tx - fx)
 end
 
 -- END OF MODULE ---------------------------------------------------------------
