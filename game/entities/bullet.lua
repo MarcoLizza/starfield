@@ -27,6 +27,7 @@ local graphics = require('lib.graphics')
 local soop = require('lib.soop')
 
 -- MODULE DECLARATION ----------------------------------------------------------
+
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
 local Bullet = soop.class(Entity)
@@ -71,8 +72,10 @@ function Bullet:draw()
     return
   end
   
+  local color = self.is_friendly and 'cyan' or 'red'
+  
   local cx, cy = unpack(self.position)
-  graphics.circle(cx, cy, self.radius, 'red')
+  graphics.circle(cx, cy, self.radius, color)
 end
 
 -- END OF MODULE ---------------------------------------------------------------
