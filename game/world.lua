@@ -128,7 +128,7 @@ function world:randomize_foe_parameters()
     x = self.width - 1
     y = love.math.random(self.height) - 1
   end
-  -- Pick a random pixel "around" the center of the screen. Then convert the
+  -- FIXME: Pick a random pixel "around" the center of the screen. Then convert the
   -- target position to an angle.
   local cx, cy = math.floor(self.width / 2), math.floor(self.height / 2)
   local dx, dy = love.math.random(cx - 32, cx + 32) - 1, love.math.random(cy - 32, cy + 32) - 1
@@ -234,6 +234,7 @@ function world:update(dt)
             self.audio:play('die')
             self.shaker:add(7)
           end
+          self:generate_damage(player.position, player.angle, 1)
         end
         return true -- always continue, we need to consider all the collisions!
       end)
@@ -270,8 +271,9 @@ function world:update(dt)
   -- Spaw a new foe from time to time
   self.ticker = self.ticker + dt
   if self.ticker >= 3 then
---    local foe = self.entities:create('foe', self:randomize_foe_parameters())
-    local foe = self.entities:create('spouter', self:randomize_foe_parameters())
+    local chance = love.math.random(10)
+    local kind = chance < 3 and 'spouter' or 'diver'
+    local foe = self.entities:create(kind, self:randomize_foe_parameters())
     self.entities:push(foe)
     self.ticker = 0
   end

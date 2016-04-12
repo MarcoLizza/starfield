@@ -23,10 +23,13 @@ freely, subject to the following restrictions:
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
 local Entity = require('game.entities.entity')
+local constants = require('game.constants')
 local graphics = require('lib.graphics')
 local soop = require('lib.soop')
+local utils= require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
+
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
 
 local Diver = soop.class(Entity)
@@ -46,24 +49,35 @@ function Diver:initialize(entities, parameters)
   self.type = 'foe'
   self.radius = 13
   self.speed = parameters.speed
-  self.life = 20
+  self.life = 3
+  self.target = self.position
 end
 
 function Diver:input(keys, dt)
 end
 
 function Diver:update(dt)
-  -- Compute the current velocity and update the position.
+  local distance = utils.distance(self.position, self.target)
+  
+  if distance <= self.radius then
+    local x, y = unpack(self.position)
+    local tx, ty = love.math.random(constants.SCREEN_WIDTH) - 1, love.math.random(constants.SCREEN_HEIGHT) - 1
+    self.angle = math.atan2(ty - y, tx - x)
+    self.target = { tx, ty }
+  end
+
   self.position = { self:cast(self.speed * dt) }
 end
 
 function Diver:draw()
-  if not self.is_alive() then
+  if not self:is_alive() then
     return
   end
   
   local cx, cy = unpack(self.position)
-  graphics.circle(cx, cy, self.radius, 'yellow')
+  graphics.circle(cx, cy, self.radius, 'purple')
+--  local tx, ty = unpack(self.target)
+--  graphics.circle(tx, ty, 1, 'purple')
 end
 
 -- END OF MODULE ---------------------------------------------------------------

@@ -53,9 +53,7 @@ function Entity:is_alive()
 end
 
 function Entity:collide(other)
-  local x0, y0 = unpack(self.position)
-  local x1, y1 = unpack(other.position)
-  local distance = utils.distance(x0, y0, x1, y1)
+  local distance = utils.distance(self.position, other.position)
   return distance <= (self.radius + other.radius)
 end
 

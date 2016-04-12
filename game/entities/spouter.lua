@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
 local Entity = require('game.entities.entity')
+local constants = require('game.constants')
 local graphics = require('lib.graphics')
 local soop = require('lib.soop')
 
@@ -57,14 +58,35 @@ function Spouter:input(keys, dt)
 end
 
 function Spouter:update(dt)
-  -- "WOBBLER": move toward the center of the screen. Once a predetermined distance
+  -- If the entity has moved outside the screen, reorient toward the center of
+  -- the screen.
+  local x, y = unpack(self.position)
+  if x < 0 or x >= constants.SCREEN_WIDTH or y < 0 or y >= constants.SCREEN_HEIGHT then
+    local cx, cy = unpack(constants.SCREEN_CENTER)
+    self.angle = math.atan2(cy - y, cx - x)
+  end
+  
+  -- TODO: "WOBBLER": move toward the center of the screen. Once a predetermined distance
   -- is reached, start moving left/right or up/down.
-  -- "SPOUTER": move to a target position in the outermost area. Once reached, start
+  -- TODO: "ROAMER": move to a target position in the outermost area. Once reached, start
   -- moving around.
   self.bullet_counter = self.bullet_counter + dt
   if self.bullet_counter >= self.bullet_rate then
-    -- FIXME: Shoot!
     self.bullet_counter = 0
+  
+    -- Pick a random pixel "around" the center of the screen. Then convert the
+    -- target position to an angle.
+    local cx, cy = unpack(constants.SCREEN_CENTER)
+    local dx, dy = love.math.random(cx - 32, cx + 32), love.math.random(cy - 32, cy + 32)
+    local angle = math.atan2(dy - y, dx - x)
+  
+    self.entities.world.audio:play('shoot', 0.25)
+    local bullet = self.entities:create('bullet', {
+        position = { unpack(self.position) },
+        angle = angle,
+        is_friendly = false
+      })
+    self.entities:push(bullet)
   end
 
   -- From time to time, change the foe direction. 
