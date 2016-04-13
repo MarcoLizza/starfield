@@ -79,10 +79,10 @@ function world:generate_score(position, angle, points)
   -- We determine a "magnitude" factor based on the amunt of points,
   -- so that bigger points will move farther aways, last longer, and
   -- are displayed bigger!
-  local factor = math.floor(points / 10)
+  local factor = math.min(2, math.floor(points / 10))
   local parameters = {
     position = { unpack(position) },
-    angle = angle + math.pi, -- bound back!
+    angle = angle + math.pi, -- bounce back!
     speed = 32 + 16 * factor,
     text = string.format('%d', points),
     color = 'white',
@@ -111,7 +111,7 @@ function world:generate_damage(position, angle, damage)
   self.entities:push(damage)
 end
 
-function world:randomize_foe_parameters()
+function world:randomize_foe_parameters(kind)
   -- Pick a border and position from which the foe will be spawned.
   local border = love.math.random(4)
   local x, y = 0, 0
@@ -134,13 +134,27 @@ function world:randomize_foe_parameters()
   local dx, dy = love.math.random(cx - 32, cx + 32) - 1, love.math.random(cy - 32, cy + 32) - 1
   local angle = math.atan2(dy - y, dx - x)
   -- Return the resulting table.
-  return {
-      position = { x, y },
-      angle = angle,
-      speed = love.math.random() * 32 + 32,
-      rate = 5,
-      wander = 2
-    }
+  if kind == 'spouter' then
+    return {
+          position = { x, y },
+          angle = angle,
+          speed = love.math.random() * 32 + 32,
+          life = 7,
+          points = 50,
+          rate = 5,
+          wander = 2
+        }
+  elseif kind == 'diver' then
+    return {
+          position = { x, y },
+          angle = angle,
+          speed = love.math.random() * 16 + 16,
+          life = 3,
+          points = 10
+        }
+  else
+    return nil
+  end
 end
 
 -- MODULE FUNCTIONS ------------------------------------------------------------
@@ -170,23 +184,27 @@ function world:initialize()
     })
 
   self.ticker = 0
-  
   self.score = 0
 end
 
-function world:generate()
-  self.entities:generate()
---  self.ticker = 0
+function world:reset()
+  self.shaker:reset()
+  self.entities:reset()
+  self.ticker = 0
+  self.score = 0
 end
 
 function world:input(keys, dt)
   self.entities:input(keys, dt)
 
-  if keys.pressed['q'] then
-    local player = self.entities:find(function(entity)
-          return entity.type == 'player'
-        end)
-    player.life = 0
+  local player = self.entities:find(function(entity)
+        return entity.type == 'player'
+      end)
+
+  if not player then
+    if keys.pressed['z'] then
+      self:reset()
+    end
   end
 end
 
@@ -251,17 +269,17 @@ function world:update(dt)
             if entity:collide(bullet) then
               bullet:kill()
               entity:hit()
-              local score = 5
+              local points = 5
               self:generate_sparkles(bullet.position)
               self.audio:play('hit', 0.50)
               self.shaker:add(1)
               if not entity:is_alive() then
-                score = 10
+                points = entity.points
                 self:generate_explosion(entity.position, 16)
                 self.audio:play('explode', 0.75)
                 self.shaker:add(3)
               end
-              self:generate_score(entity.position, entity.angle, score)
+              self:generate_score(entity.position, entity.angle, points)
             end
           end
         end
@@ -273,7 +291,7 @@ function world:update(dt)
   if self.ticker >= 3 then
     local chance = love.math.random(10)
     local kind = chance < 3 and 'spouter' or 'diver'
-    local foe = self.entities:create(kind, self:randomize_foe_parameters())
+    local foe = self.entities:create(kind, self:randomize_foe_parameters(kind))
     self.entities:push(foe)
     self.ticker = 0
   end

@@ -63,6 +63,10 @@ function Hud:draw()
         return entity.type == 'player'
       end)
 
+  -- Retrieve and display both the player life amount and score.
+  local life = math.floor(player and player.life or 0)
+  local score = math.floor(world.score)
+
   -- If the player entity is nowhere to be found, then it's dead. So, overlay
   -- a "GAME OVER" message and bail out!
   if not player then
@@ -70,19 +74,20 @@ function Hud:draw()
     graphics.text('GAME OVER',
         { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
         'retro-computer', 'white', 'center', 'middle', 3)
-    return
+    graphics.text(string.format('SCORE: %d', score),
+        { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT * 0.70 },
+        'retro-computer', 'white', 'center', 'bottom', 2)
+    graphics.text('PRESS Z TO RESTART',
+        { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT * 0.90 },
+        'retro-computer', 'white', 'center', 'bottom', 1)
+  else
+    graphics.text(string.format('LIFE: %d', life),
+        { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
+        'retro-computer', 'white', 'left', 'bottom', 1)
+    graphics.text(string.format('SCORE: %d', score),
+        { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
+        'retro-computer', 'yellow', 'right', 'bottom', 1)
   end
-
-  -- Retrieve and display both the player life amount and score.
-  local life = math.floor(player.life)
-  local score = math.floor(world.score)
-
-  graphics.text(string.format('LIFE: %d', life, 0),
-      { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
-      'retro-computer', 'white', 'left', 'bottom', 1)
-  graphics.text(string.format('SCORE: %d', score, 0),
-      { 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT },
-      'retro-computer', 'yellow', 'right', 'bottom', 1)
 end
 
 -- END OF MODULE ---------------------------------------------------------------

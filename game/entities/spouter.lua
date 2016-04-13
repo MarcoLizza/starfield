@@ -47,7 +47,8 @@ function Spouter:initialize(entities, parameters)
   self.type = 'foe'
   self.radius = 7
   self.speed = parameters.speed
-  self.life = 5
+  self.points = parameters.points
+  self.life = parameters.life
   self.bullet_rate = parameters.rate
   self.bullet_counter = 0
   self.wander_rate = parameters.wander
@@ -82,10 +83,10 @@ function Spouter:update(dt)
   
     self.entities.world.audio:play('shoot', 0.25)
     local bullet = self.entities:create('bullet', {
-        position = { unpack(self.position) },
-        angle = angle,
-        is_friendly = false
-      })
+          position = { unpack(self.position) },
+          angle = angle,
+          is_friendly = false
+        })
     self.entities:push(bullet)
   end
 
