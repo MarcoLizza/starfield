@@ -42,17 +42,29 @@ function love.load(args)
 
   -- Initializes the input handler.
   _input = Input.new()
-  _input:initialize({ up = 'move_vertical', down = 'move_vertical', left = 'move_horizontal', right = 'move_horizontal', x = 'action', q = 'action' },
-    { move_horizontal = 0, move_vertical = 0.01, action = 0.20 })
+  _input:initialize({
+        ['up'] = 'move_vertical',
+        ['down'] = 'move_vertical',
+        ['left'] = 'move_horizontal',
+        ['right'] = 'move_horizontal',
+        ['x'] = 'action',
+        ['z'] = 'action'
+      }, {
+        ['move_horizontal'] = 0,
+        ['move_vertical'] = 0.01,
+        ['action'] = 0.20
+      })
 
   -- Initializes the state-engine.
   _stateful = Stateful.new()
   _stateful:initialize({
-    splash = require('game.states.splash'),
-    menu = require('game.states.menu'),
-    game = require('game.states.game'),
-    restart = require('game.states.restart')
-  }, { level = 0 })
+        ['splash'] = require('game.states.splash'),
+        ['menu'] = require('game.states.menu'),
+        ['game'] = require('game.states.game'),
+        ['restart'] = require('game.states.restart')
+      }, {
+        level = 0
+      })
   _stateful:switch_to('game')
 end
 

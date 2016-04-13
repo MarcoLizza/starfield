@@ -41,12 +41,7 @@ function game:initialize(environment)
 end
 
 function game:enter()
-  self:reset()
-end
-
-function game:reset(params)
-  -- Update the global variable to track game progress.
-  collections.merge(self.environment, params or {})
+  self.world:reset()
 end
 
 function game:leave()
@@ -57,19 +52,8 @@ function game:input(keys, dt)
 end
 
 function game:update(dt)
-  -- Update the world, then get the current world state used to drive the
-  -- engine state-machine.
   self.world:update(dt)
   
---  local state = self.world:get_state()
---  if state then
---    if state == 'goal' then
---      self:reset(self.environment.level + 1)
---    elseif state == 'game-over' then
---      return 'restart'
---    end
---  end
-
   return nil
 end
 

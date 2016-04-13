@@ -37,8 +37,6 @@ local utils = require('lib.utils')
 -- MODULE DECLARATION ----------------------------------------------------------
 
 local Entities = {
-  world = nil,
-  entities = {}
 }
 
 -- MODULE OBJECT CONSTRUCTOR ---------------------------------------------------
@@ -52,26 +50,20 @@ end
 
 -- LOCAL FUNCTIONS -------------------------------------------------------------
 
-local function integrate(position, velocity, dt)
-  local x, y = unpack(position)
-  local vx, vy = unpack(velocity)
-  return { x = x + vx * dt, y = y + vy * dt }
-end
-
 -- MODULE FUNCTIONS ------------------------------------------------------------
 
 function Entities:initialize(world)
   self.world = world
-  
+  self.entities = {}
+end
+
+function Entities:reset()
+  self.entities = {}
   local player = self:create('player', {
       position = { unpack(constants.SCREEN_CENTER) },
       angle = 0
     })
   self:push(player)
-end
-
-function Entities:generate(level)
-  self.entities:reset()
 end
 
 function Entities:input(keys, dt)
