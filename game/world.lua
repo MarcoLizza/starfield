@@ -265,7 +265,7 @@ function world:update(dt)
   
   self.entities:iterate(function(entity)
         if entity.type == 'foe' then
-          for _, bullet in pairs(bullets) do
+          for _, bullet in ipairs(bullets) do
             if entity:collide(bullet) then
               bullet:kill()
               entity:hit()

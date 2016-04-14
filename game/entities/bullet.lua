@@ -48,7 +48,7 @@ function Bullet:initialize(entities, parameters)
   self.priority = 1
   self.is_friendly = parameters.is_friendly
   self.radius = 3
-  self.speed = 256
+  self.speed = 192
   self.life = 5
 end
 

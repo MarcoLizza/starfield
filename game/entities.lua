@@ -22,7 +22,6 @@ freely, subject to the following restrictions:
 
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
-local config = require('game.config')
 local constants = require('game.constants')
 local Player = require('game.entities.player')
 local Bullet = require('game.entities.bullet')
@@ -31,8 +30,6 @@ local Spouter = require('game.entities.spouter')
 local Smoke = require('game.entities.smoke')
 local Sparkle = require('game.entities.sparkle')
 local Bubble = require('game.entities.bubble')
-local graphics = require('lib.graphics')
-local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 
@@ -84,7 +81,7 @@ function Entities:update(dt)
   for index, entity in ipairs(self.entities) do
     entity:update(dt)
     if entity.is_alive and not entity:is_alive() then
-      table.insert(zombies, 0, index);
+      table.insert(zombies, 1, index);
     end
   end
   for _, index in ipairs(zombies) do
@@ -93,6 +90,10 @@ function Entities:update(dt)
 end
 
 function Entities:draw()
+  table.sort(self.entities, function(a, b)
+        return a.priority < b.priority
+      end)
+  
   for _, entity in pairs(self.entities) do
     entity:draw()
   end
@@ -135,13 +136,12 @@ function Entities:push(entity)
   -- Using the "table" namespace functions since we are continously
   -- scambling the content by reordering it.
   table.insert(self.entities, entity)
-  table.sort(self.entities, function(a, b)
-        return a.priority < b.priority
-      end)
 end
 
 function Entities:iterate(callback)
-  for id, entity in pairs(self.entities) do
+  local length = #self.entities
+  for index = 1, length do
+    local entity = self.entities[index]
     if not callback(entity) then
       break
     end
@@ -150,7 +150,7 @@ end
 
 function Entities:select(filter)
   local entities = {}
-  for id, entity in pairs(self.entities) do
+  for _, entity in ipairs(self.entities) do
     if filter(entity) then
       entities[#entities + 1] = entity
     end
@@ -159,7 +159,7 @@ function Entities:select(filter)
 end
 
 function Entities:find(filter)
-  for id, entity in pairs(self.entities) do
+  for _, entity in ipairs(self.entities) do
     if filter(entity) then
       return entity
     end
