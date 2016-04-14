@@ -7,10 +7,10 @@ return {
     scale = 2
   },
   starfield = {
-    layers = 5,
+    layers = 4,
     min_speed = 5,
     max_speed = 25,
-    stars_per_layer = 48,
+    stars_per_layer = 32,
     reorient_timeout = 30
   }
 }
