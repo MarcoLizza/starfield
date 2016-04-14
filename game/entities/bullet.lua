@@ -45,6 +45,7 @@ function Bullet:initialize(entities, parameters)
   
   self.entities = entities
   self.type = 'bullet'
+  self.priority = 1
   self.is_friendly = parameters.is_friendly
   self.radius = 3
   self.speed = 256

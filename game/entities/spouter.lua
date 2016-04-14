@@ -45,6 +45,7 @@ function Spouter:initialize(entities, parameters)
   
   self.entities = entities
   self.type = 'foe'
+  self.priority = 2
   self.radius = 7
   self.speed = parameters.speed
   self.points = parameters.points

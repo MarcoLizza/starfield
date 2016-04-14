@@ -44,6 +44,7 @@ function Player:initialize(entities, parameters)
   
   self.entities = entities
   self.type = 'player'
+  self.priority = 0
   self.speed = math.pi -- angular speed, of course
   self.radius = 5
   self.life = 10

@@ -92,8 +92,9 @@ function Starfield:draw()
   for _, layer in ipairs(self.layers) do
     for _, star in ipairs(layer.stars) do
       local x, y = unpack(star.position)
---      love.graphics.points(x, y) THIS IS NOT SCALED!
-      graphics.square(x, y, 1, 'white', layer.alpha)
+      -- We are drawing the stars as squares, since "love.graphics.points"
+      -- is not autoscaled (obviously).
+      graphics.square(x, y, 1, 'lightcyan', layer.alpha)
     end
   end
 end

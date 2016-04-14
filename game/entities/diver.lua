@@ -47,6 +47,7 @@ function Diver:initialize(entities, parameters)
   
   self.entities = entities
   self.type = 'foe'
+  self.priority = 2
   self.radius = 13
   self.speed = parameters.speed
   self.points = parameters.points

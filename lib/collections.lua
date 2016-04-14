@@ -19,6 +19,12 @@ function collections.find(table, comparator)
   return nil
 end
 
+function collections.foreach(table, callback)
+  for key, value in pairs(table) do
+    callback(key, value)
+  end
+end
+
 function collections.merge(target, source)
   for key, value in pairs(source) do
     if type(value) == "table" then

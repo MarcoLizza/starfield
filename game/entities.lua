@@ -75,16 +75,20 @@ end
 function Entities:update(dt)
   -- Update and keep track of the entities that supports life-querying
   -- and need to be removed.
+  --
+  -- Since we need to keep the entities list sorted, we remove "dead"
+  -- entities from the back to front. To achive this we "push" the
+  -- indices at the front of the to-be-removed list. That way, when
+  -- we traverse it we can safely remove the elements as we go.
   local zombies = {}
-  for id, entity in pairs(self.entities) do
+  for index, entity in ipairs(self.entities) do
     entity:update(dt)
     if entity.is_alive and not entity:is_alive() then
-      zombies[#zombies + 1] = id
+      table.insert(zombies, 0, index);
     end
   end
-
-  for _, id in ipairs(zombies) do
-    self.entities[id] = nil
+  for _, index in ipairs(zombies) do
+    table.remove(self.entities, index)
   end
 end
 
@@ -128,7 +132,12 @@ function Entities:create(type, parameters)
 end
 
 function Entities:push(entity)
-  self.entities[#self.entities + 1] = entity
+  -- Using the "table" namespace functions since we are continously
+  -- scambling the content by reordering it.
+  table.insert(self.entities, entity)
+  table.sort(self.entities, function(a, b)
+        return a.priority < b.priority
+      end)
 end
 
 function Entities:iterate(callback)
