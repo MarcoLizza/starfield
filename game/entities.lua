@@ -63,12 +63,6 @@ function Entities:reset()
   self:push(player)
 end
 
-function Entities:input(keys, dt)
-  for _, entity in pairs(self.entities) do
-    entity:input(keys, dt)
-  end
-end
-
 function Entities:update(dt)
   -- Update and keep track of the entities that supports life-querying
   -- and need to be removed.

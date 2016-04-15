@@ -55,9 +55,6 @@ function Diver:initialize(entities, parameters)
   self.target = self.position
 end
 
-function Diver:input(keys, dt)
-end
-
 function Diver:update(dt)
   local distance = utils.distance(self.position, self.target)
   

@@ -52,9 +52,6 @@ function Bullet:initialize(entities, parameters)
   self.life = 5
 end
 
-function Bullet:input(keys, dt)
-end
-
 function Bullet:update(dt)
   -- Decrease the current bullet life. If "dead" bail out.
   if self.life > 0 then

@@ -194,8 +194,6 @@ function world:reset()
 end
 
 function world:input(keys, dt)
-  self.entities:input(keys, dt)
-
   -- Enable restart key only when the player is dead.
   local player = self.entities:find(function(entity)
         return entity.type == 'player'
@@ -204,6 +202,31 @@ function world:input(keys, dt)
   if not player then
     if keys.pressed['z'] then
       self:reset()
+    end
+  else
+    local delta, shoot = 0, false
+    if keys.pressed['left'] then
+      delta = -player.speed * dt
+    end
+    if keys.pressed['right'] then
+      delta = player.speed * dt
+    end
+    if keys.pressed['x'] then
+      shoot = true
+    end
+
+    player:rotate(delta)
+
+    -- If the player is shooting, spawn a new projectile at the
+    -- current player position and with the same angle of direction.
+    if shoot then
+      self.audio:play('shoot', 0.25)
+      local bullet = self.entities:create('bullet', {
+          position = { unpack(player.position) },
+          angle = player.angle,
+          is_friendly = true
+        })
+      self.entities:push(bullet)
     end
   end
 end

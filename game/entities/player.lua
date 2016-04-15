@@ -50,34 +50,6 @@ function Player:initialize(entities, parameters)
   self.life = 10
 end
 
-function Player:input(keys, dt)
-  local da, shoot = 0, false
-  if keys.pressed['left'] then
-    da = da - self.speed * dt
-  end
-  if keys.pressed['right'] then
-    da = da + self.speed * dt
-  end
-  if keys.pressed['x'] then
-    shoot = true
-  end
-
-  -- Update the player heading (angle)
-  self.angle = self.angle + da
-  
-  -- If the player is shooting, spawn a new projectile at the
-  -- current player position and with the same angle of direction.
-  if shoot then
-    self.entities.world.audio:play('shoot', 0.25)
-    local bullet = self.entities:create('bullet', {
-        position = { unpack(self.position) },
-        angle = self.angle,
-        is_friendly = true
-      })
-    self.entities:push(bullet)
-  end
-end
-
 function Player:update(dt)
 end
 
@@ -92,7 +64,8 @@ function Player:draw()
   graphics.circle(x, y , 2, 'gray')
 end
 
-function Player:reset()
+function Player:rotate(delta)
+  self.angle = self.angle + delta
 end
 
 -- END OF MODULE ---------------------------------------------------------------

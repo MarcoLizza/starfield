@@ -55,9 +55,6 @@ function Sparkle:initialize(entities, parameters)
   self.reference = parameters.life
 end
 
-function Sparkle:input(keys, dt)
-end
-
 function Sparkle:update(dt)
   -- Decrease the current bullet life. If "dead" bail out.
   if self.life > 0 then

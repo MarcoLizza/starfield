@@ -54,9 +54,6 @@ function Bubble:initialize(entities, parameters)
   self.reference = self.life
 end
 
-function Bubble:input(keys, dt)
-end
-
 function Bubble:update(dt)
   -- Decrease the current particle life. If "dead" bail out.
   if self.life > 0 then

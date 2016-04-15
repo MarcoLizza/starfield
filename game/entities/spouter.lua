@@ -56,9 +56,6 @@ function Spouter:initialize(entities, parameters)
   self.wander_counter = 0
 end
 
-function Spouter:input(keys, dt)
-end
-
 function Spouter:update(dt)
   -- If the entity has moved outside the screen, reorient toward the center of
   -- the screen.

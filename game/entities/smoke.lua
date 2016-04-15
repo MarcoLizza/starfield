@@ -53,9 +53,6 @@ function Smoke:initialize(entities, parameters)
   self.color = parameters.color
 end
 
-function Smoke:input(keys, dt)
-end
-
 function Smoke:update(dt)
   -- Decrease the current bullet life. If "dead" bail out.
   if self.life > 0 then
