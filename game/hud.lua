@@ -23,9 +23,7 @@ freely, subject to the following restrictions:
 -- MODULE INCLUSIONS -----------------------------------------------------------
 
 local constants = require('game.constants')
-local collections = require('lib.collections')
 local graphics = require('lib.graphics')
-local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 

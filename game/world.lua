@@ -28,7 +28,6 @@ local Hud = require('game.hud')
 local Starfield = require('game.starfield')
 local Shaker = require('game.shaker')
 local Audio = require('lib.audio')
-local utils = require('lib.utils')
 
 -- MODULE DECLARATION ----------------------------------------------------------
 
@@ -197,6 +196,7 @@ end
 function world:input(keys, dt)
   self.entities:input(keys, dt)
 
+  -- Enable restart key only when the player is dead.
   local player = self.entities:find(function(entity)
         return entity.type == 'player'
       end)
@@ -218,15 +218,42 @@ function world:update(dt)
   self.entities:update(dt)
   self.hud:update(dt)
 
-  -- Find the player entity (we should cache it?)
+  -- Retrieve both the player and its bullets. We are going to check for
+  -- collisions in a single iteration.
   local player = self.entities:find(function(entity)
         return entity.type == 'player'
       end)
 
-  -- Scan the foes and enemy bullets, resolving collisions with the player.
+  local bullets = self.entities:select(function(entity)
+        return entity.type == 'bullet' and entity.is_friendly
+      end)
+
+  -- The player is dead, so the instance is non-existing. Skip any other
+  -- operation (collisions resolution and spawning)
+  if not player then
+    return
+  end
+
   self.entities:iterate(function(entity)
-        if not player then
-          return
+        -- First we check if any foe collides a player's bullet.
+        if entity.type == 'foe' then
+          for _, bullet in ipairs(bullets) do
+            if entity:collide(bullet) then
+              bullet:kill()
+              entity:hit()
+              local points = 5
+              self:generate_sparkles(bullet.position)
+              self.audio:play('hit', 0.50)
+              self.shaker:add(1)
+              if not entity:is_alive() then
+                points = entity.points
+                self:generate_explosion(entity.position, 16)
+                self.audio:play('explode', 0.75)
+                self.shaker:add(3)
+              end
+              self:generate_score(entity.position, entity.angle, points)
+            end
+          end
         end
         if entity.type == 'foe' and player:collide(entity) then
           entity:kill()
@@ -255,35 +282,6 @@ function world:update(dt)
           self:generate_damage(player.position, player.angle, 1)
         end
         return true -- always continue, we need to consider all the collisions!
-      end)
-
-  -- Scan the enemies, and check if one of the player bullets hit
-  -- them.
-  local bullets = self.entities:select(function(entity)
-        return entity.type == 'bullet' and entity.is_friendly
-      end)
-  
-  self.entities:iterate(function(entity)
-        if entity.type == 'foe' then
-          for _, bullet in ipairs(bullets) do
-            if entity:collide(bullet) then
-              bullet:kill()
-              entity:hit()
-              local points = 5
-              self:generate_sparkles(bullet.position)
-              self.audio:play('hit', 0.50)
-              self.shaker:add(1)
-              if not entity:is_alive() then
-                points = entity.points
-                self:generate_explosion(entity.position, 16)
-                self.audio:play('explode', 0.75)
-                self.shaker:add(3)
-              end
-              self:generate_score(entity.position, entity.angle, points)
-            end
-          end
-        end
-        return true
       end)
 
   -- Spaw a new foe from time to time
