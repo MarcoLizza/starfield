@@ -84,10 +84,6 @@ function Entities:update(dt)
 end
 
 function Entities:draw()
-  table.sort(self.entities, function(a, b)
-        return a.priority < b.priority
-      end)
-  
   for _, entity in pairs(self.entities) do
     entity:draw()
   end
@@ -130,6 +126,12 @@ function Entities:push(entity)
   -- Using the "table" namespace functions since we are continously
   -- scambling the content by reordering it.
   table.insert(self.entities, entity)
+
+  -- We sort the table at every modification, to avoid flickering in
+  -- successive redraws.
+  table.sort(self.entities, function(a, b)
+        return a.priority < b.priority
+      end)
 end
 
 function Entities:iterate(callback)
