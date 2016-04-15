@@ -66,7 +66,7 @@ local menu = {
       draw = function(self, context) 
           context:draw_background()
           graphics.text('PRESS X TO START',
-            constants.SCREEN_RECT, 'retro-computer', 'white', 'center', 'bottom')
+            constants.SCREEN_RECT, 'retro-computer', 'lime', 'center', 'bottom')
         end,
       deinit = function(self, context)
           self.image = nil
@@ -150,9 +150,9 @@ function menu:update(dt)
 end
 
 function menu:draw_background()
-  graphics.fill('dimgray')
-  graphics.text('FUGUE',
-    constants.SCREEN_RECT, 'retro-computer', 'gray', 'center', 'middle', 3)
+  graphics.fill('black')
+  graphics.text('STARFIELD',
+    constants.SCREEN_RECT, 'retro-computer', 'lime', 'center', 'middle', 3)
 end
 
 function menu:draw()
