@@ -51,11 +51,14 @@ end
 
 function Entities:initialize(world)
   self.world = world
-  self.entities = {}
+  self.active = {}
+  self.incoming = {}
 end
 
 function Entities:reset()
-  self.entities = {}
+  self.active = {}
+  self.incoming = {}
+  
   local player = self:create('player', {
       position = { unpack(constants.SCREEN_CENTER) },
       angle = 0
@@ -64,6 +67,19 @@ function Entities:reset()
 end
 
 function Entities:update(dt)
+  -- If there are any waiting recently added entities, we merge them in the
+  -- active entities list. The active list is kept sorted by entity
+  -- priority.
+  if #self.incoming > 0 then
+    for _, entity in ipairs(self.incoming) do
+      table.insert(self.active, entity);
+    end
+    self.incoming = {}
+    table.sort(self.active, function(a, b)
+          return a.priority < b.priority
+        end)
+  end
+  
   -- Update and keep track of the entities that supports life-querying
   -- and need to be removed.
   --
@@ -72,19 +88,19 @@ function Entities:update(dt)
   -- indices at the front of the to-be-removed list. That way, when
   -- we traverse it we can safely remove the elements as we go.
   local zombies = {}
-  for index, entity in ipairs(self.entities) do
+  for index, entity in ipairs(self.active) do
     entity:update(dt)
     if entity.is_alive and not entity:is_alive() then
       table.insert(zombies, 1, index);
     end
   end
   for _, index in ipairs(zombies) do
-    table.remove(self.entities, index)
+    table.remove(self.active, index)
   end
 end
 
 function Entities:draw()
-  for _, entity in pairs(self.entities) do
+  for _, entity in pairs(self.active) do
     entity:draw()
   end
 end
@@ -123,21 +139,22 @@ function Entities:create(type, parameters)
 end
 
 function Entities:push(entity)
-  -- Using the "table" namespace functions since we are continously
+  -- We enqueue the added entries in a temporary list. Then, in the "update"
+  -- function we merge the entries with the active entries list and sort it.
+  -- 
+  -- The rationale for this is to decouple the entities scan/iteration and
+  -- the addition. For example, it could happen that during an iteration we
+  -- add new entities; however we cannot modify the active entities list
+  -- content while we iterate.
+  --
+  -- We are using the "table" namespace functions since we are continously
   -- scambling the content by reordering it.
-  table.insert(self.entities, entity)
+  table.insert(self.incoming, entity)
 
-  -- We sort the table at every modification, to avoid flickering in
-  -- successive redraws.
-  table.sort(self.entities, function(a, b)
-        return a.priority < b.priority
-      end)
 end
 
 function Entities:iterate(callback)
-  local length = #self.entities
-  for index = 1, length do
-    local entity = self.entities[index]
+  for _, entity in ipairs(self.active) do
     if not callback(entity) then
       break
     end
@@ -146,7 +163,7 @@ end
 
 function Entities:select(filter)
   local entities = {}
-  for _, entity in ipairs(self.entities) do
+  for _, entity in ipairs(self.active) do
     if filter(entity) then
       entities[#entities + 1] = entity
     end
@@ -155,7 +172,7 @@ function Entities:select(filter)
 end
 
 function Entities:find(filter)
-  for _, entity in ipairs(self.entities) do
+  for _, entity in ipairs(self.active) do
     if filter(entity) then
       return entity
     end

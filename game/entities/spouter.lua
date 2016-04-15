@@ -79,7 +79,7 @@ function Spouter:update(dt)
     local dx, dy = love.math.random(cx - 32, cx + 32), love.math.random(cy - 32, cy + 32)
     local angle = math.atan2(dy - y, dx - x)
   
-    self.entities.world.audio:play('shoot', 0.25)
+    self.entities.world.audio:play('shoot', 0.25) -- FIXME: this is plain ugly!!! :(
     local bullet = self.entities:create('bullet', {
           position = { unpack(self.position) },
           angle = angle,
