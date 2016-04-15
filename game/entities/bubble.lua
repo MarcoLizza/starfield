@@ -46,6 +46,7 @@ function Bubble:initialize(entities, parameters)
   self.entities = entities
   self.type = 'bubble'
   self.priority = 5
+  self.ephemeral = true
   self.speed = parameters.speed
   self.text = parameters.text
   self.color = parameters.color

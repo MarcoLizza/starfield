@@ -235,77 +235,55 @@ function world:update(dt)
   self.audio:update(dt)
   self.starfield:update(dt)
   self.shaker:update(dt)
-  
-  -- TODO: should resolve collisions HERE, by projecting movements.
-
   self.entities:update(dt)
   self.hud:update(dt)
 
-  -- Retrieve both the player and its bullets. We are going to check for
-  -- collisions in a single iteration.
-  local player = self.entities:find(function(entity)
-        return entity.type == 'player'
-      end)
-
-  local bullets = self.entities:select(function(entity)
-        return entity.type == 'bullet' and entity.is_friendly
-      end)
-
-  -- The player is dead, so the instance is non-existing. Skip any other
-  -- operation (collisions resolution and spawning)
-  if not player then
-    return
+  -- TODO: should resolve collisions HERE, by projecting movements.
+  local collisions = self.entities:colliding()
+  for _, pair in ipairs(collisions) do
+    local this, that = unpack(pair)
+    if this.type == 'foe' and that.type == 'bullet' and that.is_friendly then
+      this:hit()
+      that:kill()
+      local points = 5
+      self:generate_sparkles(that.position)
+      self.audio:play('hit', 0.50)
+      self.shaker:add(1)
+      if not this:is_alive() then
+        points = this .points
+        self:generate_explosion(this.position, 16)
+        self.audio:play('explode', 0.75)
+        self.shaker:add(3)
+      end
+      self:generate_score(this.position, this.angle, points)
+    end
+    if this.type == 'player' and that.type == 'foe' then
+      this:hit()
+      that:kill()
+      self:generate_explosion(that.position, 16)
+      self.audio:play('explode', 0.75)
+      self.shaker:add(3)
+      if not this:is_alive() then
+        self:generate_explosion(this.position, 32)
+        self.audio:play('die')
+        self.shaker:add(7)
+      end
+      self:generate_damage(this.position, this.angle, 1)
+    end
+    if this.type == 'player' and that.type == 'bullet' and not that.is_friendly then
+      this:hit()
+      that:kill()
+      self:generate_sparkles(that.position)
+      self.audio:play('hit', 0.50)
+      self.shaker:add(1)
+      if not this:is_alive() then
+        self:generate_explosion(this.position, 32)
+        self.audio:play('die')
+        self.shaker:add(7)
+      end
+      self:generate_damage(this.position, this.angle, 1)
+    end
   end
-
-  self.entities:iterate(function(entity)
-        -- First we check if any foe collides a player's bullet.
-        if entity.type == 'foe' then
-          for _, bullet in ipairs(bullets) do
-            if entity:collide(bullet) then
-              bullet:kill()
-              entity:hit()
-              local points = 5
-              self:generate_sparkles(bullet.position)
-              self.audio:play('hit', 0.50)
-              self.shaker:add(1)
-              if not entity:is_alive() then
-                points = entity.points
-                self:generate_explosion(entity.position, 16)
-                self.audio:play('explode', 0.75)
-                self.shaker:add(3)
-              end
-              self:generate_score(entity.position, entity.angle, points)
-            end
-          end
-        end
-        if entity.type == 'foe' and player:collide(entity) then
-          entity:kill()
-          player:hit()
-          self:generate_explosion(entity.position, 16)
-          self.audio:play('explode', 0.75)
-          self.shaker:add(3)
-          if not player:is_alive() then
-            self:generate_explosion(player.position, 32)
-            self.audio:play('die')
-            self.shaker:add(7)
-          end
-          self:generate_damage(player.position, player.angle, 1)
-        end
-        if entity.type == 'bullet' and not entity.is_friendly and player:collide(entity) then
-          entity:kill()
-          player:hit()
-          self:generate_sparkles(entity.position)
-          self.audio:play('hit', 0.50)
-          self.shaker:add(1)
-          if not player:is_alive() then
-            self:generate_explosion(player.position, 32)
-            self.audio:play('die')
-            self.shaker:add(7)
-          end
-          self:generate_damage(player.position, player.angle, 1)
-        end
-        return true -- always continue, we need to consider all the collisions!
-      end)
 
   -- Spaw a new foe from time to time
   self.ticker = self.ticker + dt

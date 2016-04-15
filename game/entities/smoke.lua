@@ -46,6 +46,7 @@ function Smoke:initialize(entities, parameters)
   self.entities = entities
   self.type = 'smoke'
   self.priority = 4
+  self.ephemeral = true
   self.radius = parameters.radius
   self.speed = parameters.speed
   self.life = parameters.life

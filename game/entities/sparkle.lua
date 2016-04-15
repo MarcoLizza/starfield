@@ -49,6 +49,7 @@ function Sparkle:initialize(entities, parameters)
   self.entities = entities
   self.type = 'sparkle'
   self.priority = 3
+  self.ephemeral = true
   self.radius = parameters.radius
   self.speed = parameters.speed
   self.life = parameters.life
