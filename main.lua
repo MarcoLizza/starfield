@@ -101,7 +101,7 @@ function love.draw()
   love.graphics.pop()
 
   if config.debug.fps then
-    love.graphics.print(love.timer.getFPS() .. '|' .. _time, 0, 0)
+    love.graphics.print(love.timer.getFPS() .. '\n' .. _time, 0, 0)
   end
 end
 
