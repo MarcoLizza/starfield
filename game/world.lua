@@ -81,7 +81,7 @@ function world:generate_score(position, angle, points)
   local factor = math.min(2, math.floor(points / 10))
   local parameters = {
     position = { unpack(position) },
-    angle = angle + math.pi, -- bounce back!
+    angle = angle + love.math.random() * 2 * math.pi,
     speed = 32 + 16 * factor,
     text = string.format('%d', points),
     color = 'white',
@@ -99,7 +99,7 @@ function world:generate_damage(position, angle, damage)
   -- are displayed bigger!
   local parameters = {
     position = { unpack(position) },
-    angle = angle + math.pi, -- bound back!
+    angle = angle + love.math.random() * 2 * math.pi,
     speed = 16,
     text = string.format('-%d', damage),
     color = 'red',
@@ -256,6 +256,7 @@ function world:update(dt)
         self.shaker:add(3)
       end
       self:generate_score(this.position, this.angle, points)
+      self:generate_damage(this.position, this.angle, 1)
     end
     if this.type == 'player' and that.type == 'foe' then
       this:hit()
