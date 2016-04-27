@@ -90,7 +90,7 @@ function Entities:update(dt)
   local zombies = {}
   for index, entity in ipairs(self.active) do
     entity:update(dt)
-    if entity.is_alive and not entity:is_alive() then
+    if not entity:is_alive() then
       table.insert(zombies, 1, index);
     end
   end
