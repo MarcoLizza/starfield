@@ -79,9 +79,7 @@ function Entities:update(dt)
           return a.priority < b.priority
         end)
   end
-  
-  -- Update and keep track of the entities that supports life-querying
-  -- and need to be removed.
+  -- Update and keep track of the entities that need to be removed.
   --
   -- Since we need to keep the entities list sorted, we remove "dead"
   -- entities from the back to front. To achive this we "push" the
